@@ -1,0 +1,5 @@
+package bouken
+
+class Pathing {
+
+}
