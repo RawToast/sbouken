@@ -1,11 +1,7 @@
 package bouken
 
-import scala.annotation.tailrec
-import scala.util.control.TailCalls.TailRec
 
 trait Pathing[A] {
-  def invalidPosition(position: Position): Boolean =
-    position.x < 0 || position.y < 0
 
   def canNavigate(a: A, from: Position, to: Position, limit: Int): Boolean
 
@@ -24,10 +20,9 @@ object Area {
 
       def loop(currentPosition: Position, turn: Int, route: Seq[Position], canNavi: Boolean): Boolean =
         if (turn > limit) false
-        else if (canNavi) false
+        else if (canNavi) true
         else if (limit - turn < Math.abs(to.x - currentPosition.x)
           || limit - turn < Math.abs(to.y - currentPosition.y)) false
-        else if (invalidPosition(currentPosition)) false
         else if (isOutOfBounds(a, currentPosition)) false
         else if (isInvalidTerran(a, currentPosition)) false
         else if (turn == 1 && isInvalidMove(a, currentPosition)) false
@@ -52,10 +47,10 @@ object Area {
     }
 
     override def isOutOfBounds(a: Area, position: Position): Boolean =
-      a.value.get(position).isEmpty
+      position.x < 0 || position.y < 0 || a.value.get(position).isEmpty
 
     override def isInvalidTerran(a: Area, position: Position): Boolean =
-      a.value.get(position).exists(_.tile == Wall)
+      a.value.get(position).forall(_.tile == Wall)
 
     override def isInvalidMove(a: Area, position: Position): Boolean = {
       a.value.get(position) match {
@@ -66,6 +61,25 @@ object Area {
         case None => true
       }
     }
+  }
+
+
+
+}
+
+object PathingSyntax {
+  implicit class PathingSyntaxOps[A](a: A) {
+    def isOutOfBounds(position: Position)(implicit pathing: Pathing[A]): Boolean =
+      pathing.isOutOfBounds(a, position)
+
+    def isInvalidTerran(position: Position)(implicit pathing: Pathing[A]): Boolean =
+      pathing.isInvalidTerran(a, position)
+
+    def isInvalidMove(position: Position)(implicit pathing: Pathing[A]): Boolean =
+      pathing.isInvalidMove(a, position)
+
+    def canNavigate(from: Position, to: Position, limit: Int)(implicit pathing: Pathing[A]): Boolean =
+      pathing.canNavigate(a, from, to, limit)
   }
 }
 
