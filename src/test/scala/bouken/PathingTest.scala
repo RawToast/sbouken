@@ -117,6 +117,39 @@ class PathingTest extends FreeSpec with Matchers {
       }
     }
   }
+
+  "Find Position" - {
+      import LocatePositionSyntax._
+      "Returns a place if one exists" in {
+        val result = blankArea.find(Position(0, 0))
+
+        result shouldBe Some(Place(visible = true, Ground, Empty, NoEffect))
+      }
+
+    "Returns `None` if nothing exists" in {
+      val result = blankArea.find(Position(50, 0))
+
+      result shouldBe None
+    }
+  }
+
+  "Suggest Route" - {
+    "Returns a place if one exists" in {
+      val blankPlace = Position(0, 0)
+      val wallPlace = Position(1, 4)
+      val result = Area.navigation.suggestRoute(horseShoe, WallWalker("Dave"), blankPlace, wallPlace)
+
+      result.value shouldBe List(blankPlace)
+    }
+
+    "Returns `None` if nothing exists" in {
+      val blankPlace = Position(110, 0)
+      val wallPlace = Position(1, 411)
+      val result = Area.navigation.suggestRoute(horseShoe, WallWalker("Dave"), blankPlace, wallPlace)
+
+      result.value shouldBe empty
+    }
+  }
 }
 
 object PathingTest {
@@ -142,4 +175,14 @@ object PathingTest {
               else Place(visible = true, Ground, Empty, NoEffect)
     } yield position -> place
     ).toMap)
+
+  case class WallWalker(name: String)
+  object WallWalker {
+    implicit val moveCost: MoveCosts[WallWalker] = (b: WallWalker, place: Place) => place.tile match {
+      case Ground => 1d
+      case Rough => 2d
+      case Wall => 5d
+      case Water => 3d
+    }
+  }
 }
