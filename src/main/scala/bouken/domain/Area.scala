@@ -6,10 +6,10 @@ case class Area(value: Map[Position, Place]) extends AnyVal
 case class Route(value: List[Position]) extends AnyVal
 
 object Area {
-  implicit val locatePosition: LocatePosition[Area, Option[Place]] =
+  implicit val LocatePosition: LocatePosition[Area, Option[Place]] =
     (a: Area, position: Position) => a.value.get(position)
 
-  implicit val areaPathing: Pathing[Area] = new Pathing[Area] {
+  implicit val AreaPathing: Pathing[Area] = new Pathing[Area] {
     import LocatePositionSyntax._
     override def canNavigate(a: Area, from: Position, to: Position, limit: Int): Boolean = {
 
@@ -58,25 +58,48 @@ object Area {
     }
   }
 
-  implicit val navigation: Navigation[Area] = new Navigation[Area] {
+  implicit val AreaNavigation: Navigation[Area] = new Navigation[Area] {
     override def suggestRoute[B: MoveCosts](a: Area, mover: B, from: Position, to: Position)(
       implicit pathing: Pathing[Area]): Route = {
       import LocatePositionSyntax._
 
       val costCalc: MoveCosts[B] = implicitly[MoveCosts[B]]
+      def placeCost(place: Position) = a.find(place).map(costCalc.moveCost(mover, _)).getOrElse(99d)
 
-      val placeA = a.find(from)
-      val placeB = a.find(to)
+      val limit = 9 // move
 
-      // example calcs, nothing real just compilation check
-      (placeA, placeB) match {
-        case (Some(fromPlace), Some(toPlace)) =>
-          if (costCalc.moveCost(mover, fromPlace) > costCalc.moveCost(mover, toPlace)) Route(List(to))
-          else Route(List(from))
-        case (Some(_), _) => Route(List(to))
-        case (_, Some(_)) => Route(List(to))
-        case _ => Route(List.empty)
+      def selectRoute(routeA: Route, routeB: Route, bestLength: Double) =
+        if(routeA.value.foldLeft(0d){case (c, pos) => c + placeCost(pos)} < bestLength) routeA else routeB
+
+
+      def loop(currentPosition: Position, turn: Int, route: List[Position], bestRoute: Route): Route = {
+        lazy val bestLength =
+          if (bestRoute.value.nonEmpty) bestRoute.value.foldLeft(0d){case (c, pos) => c + placeCost(pos)}
+          else 99d
+        lazy val history = if (turn == 0) route else route :+ currentPosition
+
+        if (turn > limit) bestRoute
+        else if (route.contains(currentPosition)) bestRoute
+        else if (limit - turn < Math.abs(to.x - currentPosition.x)
+          || limit - turn < Math.abs(to.y - currentPosition.y)) bestRoute
+        else if (AreaPathing.isOutOfBounds(a, currentPosition)) bestRoute
+        else if (AreaPathing.isInvalidTerran(a, currentPosition)) bestRoute
+        else if (turn == 1 && AreaPathing.isInvalidMove(a, currentPosition)) bestRoute
+        else if (currentPosition == to) selectRoute(Route(route :+ currentPosition), bestRoute, bestLength)
+        else loop(Position(currentPosition.x - 1, currentPosition.y + 1), turn + 1, history,
+          loop(Position(currentPosition.x, currentPosition.y + 1), turn + 1, history,
+            loop(Position(currentPosition.x + 1, currentPosition.y + 1), turn + 1, history,
+              loop(Position(currentPosition.x - 1, currentPosition.y), turn + 1, history,
+                loop(Position(currentPosition.x, currentPosition.y), turn + 1, history,
+                  loop(Position(currentPosition.x + 1, currentPosition.y), turn + 1, history,
+                    loop(Position(currentPosition.x - 1, currentPosition.y - 1), turn + 1, history,
+                      loop(Position(currentPosition.x, currentPosition.y - 1), turn + 1, history,
+                        loop(Position(currentPosition.x + 1, currentPosition.y - 1), turn + 1, history,
+                          bestRoute)))))))))
       }
+
+
+      loop(currentPosition = from, turn = 0, route = List.empty, bestRoute = Route(List.empty))
     }
   }
 }

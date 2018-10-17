@@ -134,20 +134,31 @@ class PathingTest extends FreeSpec with Matchers {
   }
 
   "Suggest Route" - {
-    "Returns a place if one exists" in {
-      val blankPlace = Position(0, 0)
-      val wallPlace = Position(1, 4)
-      val result = Area.navigation.suggestRoute(horseShoe, WallWalker("Dave"), blankPlace, wallPlace)
+    "When a single route exists" - {
+      val start = Position(0, 0)
+      val finish = Position(0, 2)
+      lazy val result = Area.AreaNavigation.suggestRoute(horseShoe, WallWalker("Dave"), start, finish)
 
-      result.value shouldBe List(blankPlace)
+      "Suggests a single route" in {
+        result.value.size shouldBe 2
+      }
+
+      "With the expected path" in {
+        result.value shouldBe List(Position(0,1), Position(0,2))
+      }
     }
+    "When multiple routes exist" - {
+      val start = Position(0, 3)
+      val finish = Position(2, 3)
+      lazy val result = Area.AreaNavigation.suggestRoute(horseShoe, WallWalker("Dave"), start, finish)
 
-    "Returns `None` if nothing exists" in {
-      val blankPlace = Position(110, 0)
-      val wallPlace = Position(1, 411)
-      val result = Area.navigation.suggestRoute(horseShoe, WallWalker("Dave"), blankPlace, wallPlace)
+      "Suggests a single route" in {
+        result.value.isEmpty shouldBe false
+      }
 
-      result.value shouldBe empty
+      "That is the fastest possible" in {
+        result.value shouldBe List(Position(0,4), Position(1,5), Position(2,4), Position(2,3))
+      }
     }
   }
 }
