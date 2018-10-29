@@ -69,8 +69,8 @@ object Area {
       val limit = 9 // move
 
       def selectRoute(routeA: Route, routeB: Route, bestLength: Double) =
-        if(routeA.value.foldLeft(0d){case (c, pos) => c + placeCost(pos)} < bestLength) routeA else routeB
-
+        if(routeA.value.foldLeft(0d){ case (c, pos) => c + placeCost(pos) } < bestLength) routeA
+        else routeB
 
       def loop(currentPosition: Position, turn: Int, route: List[Position], bestRoute: Route): Route = {
         lazy val bestLength =
@@ -97,42 +97,6 @@ object Area {
                         loop(Position(currentPosition.x + 1, currentPosition.y - 1), turn + 1, history,
                           bestRoute)))))))))
       }
-
-
-      def brsetloop(turn: Int, positions: List[Route], bestRoute: Route): Route = {
-        lazy val bestLength =
-          if (bestRoute.value.nonEmpty) bestRoute.value.foldLeft(0d){case (c, pos) => c + placeCost(pos)}
-          else 99d
-
-        def newPositions(currentPosition: Position) = List(Position(currentPosition.x - 1, currentPosition.y + 1),
-          Position(currentPosition.x, currentPosition.y + 1),
-          Position(currentPosition.x + 1, currentPosition.y + 1),
-          Position(currentPosition.x - 1, currentPosition.y),
-          Position(currentPosition.x, currentPosition.y),
-          Position(currentPosition.x - 1, currentPosition.y - 1),
-          Position(currentPosition.x, currentPosition.y - 1),
-          Position(currentPosition.x + 1, currentPosition.y - 1)
-        )
-
-        val spread: List[Route] = if (positions.isEmpty) newPositions(from).map(p => Route(List(p)))
-        else positions.flatMap{ route =>
-          val last = route.value.last
-          newPositions(last).map(p => Route(route.value :+ p))
-        }
-
-
-        if (turn > limit) bestRoute
-        else if (route.contains(currentPosition)) bestRoute
-        else if (limit - turn < Math.abs(to.x - currentPosition.x)
-          || limit - turn < Math.abs(to.y - currentPosition.y)) bestRoute
-        else if (AreaPathing.isOutOfBounds(a, currentPosition)) bestRoute
-        else if (AreaPathing.isInvalidTerran(a, currentPosition)) bestRoute
-        else if (turn == 1 && AreaPathing.isInvalidMove(a, currentPosition)) bestRoute
-        else if (currentPosition == to) selectRoute(Route(route :+ currentPosition), bestRoute, bestLength)
-        else brsetloop(turn + 1, positions, bestRoute)
-      }
-
-      brsetloop(0, List.empty, Route(List.empty))
 
       loop(currentPosition = from, turn = 0, route = List.empty, bestRoute = Route(List.empty))
     }

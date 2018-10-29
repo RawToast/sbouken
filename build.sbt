@@ -17,3 +17,5 @@ libraryDependencies ++= Seq(
 scalacOptions += "-Ypartial-unification"
 
 addCommandAlias("validate", ";coverage;test;coverageReport")
+
+enablePlugins(ScalaJSPlugin)
