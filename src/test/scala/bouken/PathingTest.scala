@@ -161,6 +161,91 @@ class PathingTest extends FreeSpec with Matchers {
       }
     }
   }
+
+  "TRSuggest Route" - {
+
+    val TrNavigation = new Navigation[Area] {
+      import bouken.LocatePositionSyntax._
+      override def suggestRoute[B: MoveCosts](a: Area, mover: B, from: Position, to: Position
+                                             )(implicit pathing: Pathing[Area]): Route = {
+
+        val limit = 9
+        val costCalc: MoveCosts[B] = implicitly[MoveCosts[B]]
+        def placeCost(place: Position) = a.find(place).map(costCalc.moveCost(mover, _)).getOrElse(99d)
+
+        def bestloop(turn: Int, positions: List[Route], bestRoute: Route): Route = {
+          lazy val bestLength =
+            if (bestRoute.value.nonEmpty) bestRoute.value.foldLeft(0d){case (c, pos) => c + placeCost(pos)}
+            else 99d
+
+          def newPositions(currentPosition: Position) = List(Position(currentPosition.x - 1, currentPosition.y + 1),
+            Position(currentPosition.x, currentPosition.y + 1),
+            Position(currentPosition.x + 1, currentPosition.y + 1),
+            Position(currentPosition.x - 1, currentPosition.y),
+            Position(currentPosition.x, currentPosition.y),
+            Position(currentPosition.x - 1, currentPosition.y - 1),
+            Position(currentPosition.x, currentPosition.y - 1),
+            Position(currentPosition.x + 1, currentPosition.y - 1)
+          )
+
+          val possibleRoutes: List[Route] =
+            if (positions.isEmpty) newPositions(from).map(p => Route(List(p)))
+            else positions.flatMap { route =>
+              val last = route.value.last
+              newPositions(last)
+                .filterNot(route.value.contains)
+                .map(p => Route(route.value :+ p))
+            }
+            .filterNot { route =>
+              val currentPosition = route.value.last
+              pathing.isOutOfBounds(a, currentPosition) ||
+                pathing.isInvalidTerran(a, currentPosition) ||
+                // Invalid first move
+                (turn == 1 && pathing.isInvalidMove(a, currentPosition)) ||
+                // Too far
+                limit - turn < Math.abs(to.x - currentPosition.x) ||
+                limit - turn < Math.abs(to.y - currentPosition.y)
+            }
+
+          val (complete, incomplete) = possibleRoutes.partition(_.value.contains(to))
+
+
+          if (currentPosition == to) selectRoute(Route(route :+ currentPosition), bestRoute, bestLength)
+          else bestloop(turn + 1, incomplete, bestRoute)
+        }
+
+        bestloop(0, List.empty, Route(List.empty))
+      }
+    }
+
+
+    "When a single route exists" - {
+      val start = Position(0, 0)
+      val finish = Position(0, 2)
+      lazy val result = Area.AreaNavigation.suggestRoute(horseShoe, WallWalker("Dave"), start, finish)
+
+      "Suggests a single route" in {
+        result.value.size shouldBe 2
+      }
+
+      "With the expected path" in {
+        result.value shouldBe List(Position(0,1), Position(0,2))
+      }
+    }
+    "When multiple routes exist" - {
+      val start = Position(0, 3)
+      val finish = Position(2, 3)
+      lazy val result = Area.AreaNavigation.suggestRoute(horseShoe, WallWalker("Dave"), start, finish)
+
+      "Suggests a single route" in {
+        result.value.isEmpty shouldBe false
+      }
+
+      "That is the fastest possible" in {
+        result.value shouldBe List(Position(0,4), Position(1,5), Position(2,4), Position(2,3))
+      }
+    }
+  }
 }
 
 object PathingTest {
