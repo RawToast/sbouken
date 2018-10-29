@@ -168,15 +168,18 @@ class PathingTest extends FreeSpec with Matchers {
       import bouken.LocatePositionSyntax._
       override def suggestRoute[B: MoveCosts](a: Area, mover: B, from: Position, to: Position
                                              )(implicit pathing: Pathing[Area]): Route = {
+        case class CostedRoute(a: Route, cost: Double)
 
         val limit = 9
         val costCalc: MoveCosts[B] = implicitly[MoveCosts[B]]
         def placeCost(place: Position) = a.find(place).map(costCalc.moveCost(mover, _)).getOrElse(99d)
 
-        def bestloop(turn: Int, positions: List[Route], bestRoute: Route): Route = {
+        def bestloop(turn: Int, positions: List[Route], bestRoute: Option[Route]): Option[Route] = {
           lazy val bestLength =
-            if (bestRoute.value.nonEmpty) bestRoute.value.foldLeft(0d){case (c, pos) => c + placeCost(pos)}
-            else 99d
+            bestRoute match {
+              case Some(r) => r.value.foldLeft(0d){case (c, pos) => c + placeCost(pos)}
+              case None => 99d
+            }
 
           def newPositions(currentPosition: Position) = List(Position(currentPosition.x - 1, currentPosition.y + 1),
             Position(currentPosition.x, currentPosition.y + 1),
@@ -208,13 +211,21 @@ class PathingTest extends FreeSpec with Matchers {
             }
 
           val (complete, incomplete) = possibleRoutes.partition(_.value.contains(to))
+          val updBest = bestRoute.map{
+            r =>
+              complete.foldLeft(CostedRoute(r, bestLength))((ca: CostedRoute, b: Route) =>
+                if (b.value.foldLeft(0d){
+                  case (c, pos) => c + placeCost(pos) } < ca.cost) CostedRoute(b, b.value.foldLeft(0d){ case (c, pos) => c + placeCost(pos) } )
+                else ca)
+          }
 
+          if (bestRoute.nonEmpty && complete.isEmpty &&
+            !incomplete.exists(_.value.foldLeft(0d){ case (c, pos) => c + placeCost(pos) } < bestLength)) bestRoute
 
-          if (currentPosition == to) selectRoute(Route(route :+ currentPosition), bestRoute, bestLength)
           else bestloop(turn + 1, incomplete, bestRoute)
         }
 
-        bestloop(0, List.empty, Route(List.empty))
+        bestloop(0, List.empty, None)
       }
     }
 
