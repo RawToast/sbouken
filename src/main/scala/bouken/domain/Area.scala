@@ -153,9 +153,9 @@ object TrArea{
                 limit - turn < Math.abs(to.y - currentPosition.y)
             }
 
-
         // Compare completed routes against best and find the new best
         val (complete, incomplete) = possibleRoutes.partition(_.value.contains(to))
+
 
         val updBest =
           if (complete.isEmpty) bestRoute.map(r => CostedRoute(r, bestLength))
