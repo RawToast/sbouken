@@ -11,7 +11,7 @@ resolvers ++= Seq(
 
 libraryDependencies ++= Seq(
   "org.typelevel" %% "cats-core" % "1.4.0",
-  "org.scalatest" %% "scalatest" % "3.0.5" % "test"
+  "org.scalatest" %%% "scalatest" % "3.0.5" % "test"
 )
 
 scalacOptions += "-Ypartial-unification"
