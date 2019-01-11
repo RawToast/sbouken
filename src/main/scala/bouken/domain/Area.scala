@@ -102,3 +102,90 @@ object Area {
     }
   }
 }
+
+object TrArea{
+  // Scrappy tail-recursive implementation, but may be required later.
+  val Navigation = new Navigation[Area] {
+    import bouken.LocatePositionSyntax._
+    override def suggestRoute[B: MoveCosts](a: Area, mover: B, from: Position, to: Position
+                                           )(implicit pathing: Pathing[Area]): Route = {
+      case class CostedRoute(a: Route, cost: Double)
+
+      val limit = 9
+      val costCalc: MoveCosts[B] = implicitly[MoveCosts[B]]
+      def placeCost(place: Position) = a.find(place).map(costCalc.moveCost(mover, _)).getOrElse(99d)
+
+      @scala.annotation.tailrec
+      def bestloop(turn: Int, positions: List[Route], bestRoute: Option[Route]): Option[Route] = {
+        lazy val bestLength =
+          bestRoute match {
+            case Some(r) => r.value.foldLeft(0d){case (c, pos) => c + placeCost(pos)}
+            case None => 99d
+          }
+
+        def newPositions(currentPosition: Position) = List(Position(currentPosition.x - 1, currentPosition.y + 1),
+          Position(currentPosition.x, currentPosition.y + 1),
+          Position(currentPosition.x + 1, currentPosition.y + 1),
+          Position(currentPosition.x - 1, currentPosition.y),
+          Position(currentPosition.x, currentPosition.y),
+          Position(currentPosition.x - 1, currentPosition.y - 1),
+          Position(currentPosition.x, currentPosition.y - 1),
+          Position(currentPosition.x + 1, currentPosition.y - 1)
+        )
+
+        // Filter paths
+        val possibleRoutes: List[Route] =
+          if (positions.isEmpty) newPositions(from).map(p => Route(List(p)))
+          else positions.flatMap { route =>
+            val last = route.value.last
+            newPositions(last)
+              .filterNot(route.value.contains)
+              .map(p => Route(route.value :+ p))
+          }
+            .filterNot { route =>
+              val currentPosition = route.value.last
+              pathing.isOutOfBounds(a, currentPosition) ||
+                pathing.isInvalidTerran(a, currentPosition) ||
+                // Invalid first move
+                (turn == 1 && pathing.isInvalidMove(a, currentPosition)) ||
+                // Too far
+                limit - turn < Math.abs(to.x - currentPosition.x) ||
+                limit - turn < Math.abs(to.y - currentPosition.y)
+            }
+
+        // Compare completed routes against best and find the new best
+        val (complete, incomplete) = possibleRoutes.partition(_.value.contains(to))
+
+
+        val updBest =
+          if (complete.isEmpty) bestRoute.map(r => CostedRoute(r, bestLength))
+          else bestRoute match {
+            case Some(br) =>
+              Option(
+                complete.foldLeft(CostedRoute(br, bestLength))((ca: CostedRoute, b: Route) =>
+                  if (b.value.foldLeft(0d) { case (c, pos) => c + placeCost(pos) } < ca.cost)
+                    CostedRoute(b, b.value.foldLeft(0d) { case (c, pos) => c + placeCost(pos) })
+                  else ca)
+              )
+            case None =>
+              complete
+                .map(r => CostedRoute(r, r.value.foldLeft(0d) { case (c, pos) => c + placeCost(pos) }))
+                .reduceOption((a, b) => if(a.cost > b.cost) b else a)
+          }
+
+        val newBest: Option[Route] = updBest.map(_.a)
+        val newBestCost = updBest.map(_.cost).getOrElse(99d)
+
+        // Can any current routes possibly beat the best?
+        lazy val potentialRoutes = incomplete.filter{ r =>
+          newBestCost > r.value.foldLeft(0d){ case (c, pos) => c + placeCost(pos) }
+        }
+
+        if (potentialRoutes.isEmpty) newBest
+        else bestloop(turn + 1, potentialRoutes, newBest)
+      }
+
+      bestloop(0, List.empty, None).getOrElse(Route(List.empty))
+    }
+  }
+}
