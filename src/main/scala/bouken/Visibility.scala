@@ -2,13 +2,13 @@ package bouken
 
 import bouken.domain.{Place, Tile}
 
-trait Vision[A] {
+trait Visibility[A] {
   def updateVisibility[S: Sight](a: A, s: S, position: Position): A
 }
 
-object VisionSyntax {
-  implicit class VisionSyntaxOps[A](val a: A) extends AnyVal {
-    def updateVisibility[S: Sight](s: S, position: Position)(implicit sight: Vision[A]): A =
+object VisibilitySyntax {
+  implicit class VisibilitySyntaxOps[A](val a: A) extends AnyVal {
+    def updateVisibility[S: Sight](s: S, position: Position)(implicit sight: Visibility[A]): A =
       sight.updateVisibility(a, s, position)
   }
 }

@@ -2,6 +2,6 @@ package bouken
 
 import org.scalatest.{FreeSpec, Matchers}
 
-class VisionTest extends FreeSpec with Matchers {
+class VisibilityTest extends FreeSpec with Matchers {
 
 }
