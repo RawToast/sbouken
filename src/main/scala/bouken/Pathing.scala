@@ -15,7 +15,7 @@ trait Pathing[A] {
 }
 
 object PathingSyntax {
-  implicit class PathingSyntaxOps[A](a: A) {
+  implicit class PathingSyntaxOps[A](val a: A) extends AnyVal {
     def isOutOfBounds(position: Position)(implicit pathing: Pathing[A]): Boolean =
       pathing.isOutOfBounds(a, position)
 

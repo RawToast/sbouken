@@ -162,11 +162,11 @@ class PathingTest extends FreeSpec with Matchers {
     }
   }
 
-  "TRSuggest Route" - {
+  "RecusiveArea Suggest Route" - {
     "When a single route exists" - {
       val start = Position(0, 0)
       val finish = Position(0, 2)
-      lazy val result = TrArea.Navigation.suggestRoute(horseShoe, WallWalker("Dave"), start, finish)
+      lazy val result = RecursiveArea.Navigation.suggestRoute(horseShoe, WallWalker("Dave"), start, finish)
 
       "Suggests a single route" in {
         result.value.size shouldBe 2
@@ -179,7 +179,7 @@ class PathingTest extends FreeSpec with Matchers {
     "When multiple routes exist" - {
       val start = Position(0, 3)
       val finish = Position(2, 3)
-      lazy val result = TrArea.Navigation.suggestRoute(horseShoe, WallWalker("Dave"), start, finish)
+      lazy val result = RecursiveArea.Navigation.suggestRoute(horseShoe, WallWalker("Dave"), start, finish)
 
       "Suggests a single route" in {
         result.value.isEmpty shouldBe false

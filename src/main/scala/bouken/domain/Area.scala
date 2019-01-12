@@ -6,6 +6,24 @@ case class Area(value: Map[Position, Place]) extends AnyVal
 case class Route(value: List[Position]) extends AnyVal
 
 object Area {
+  implicit val LocatePosition: LocatePosition[Area, Option[Place]] = AreaLogic.LocatePosition
+
+  implicit val AreaPathing: Pathing[Area] = AreaLogic.AreaPathing
+
+  implicit val AreaNavigation: Navigation[Area] = AreaLogic.UnsafeAreaNavigation
+}
+
+object RecursiveArea {
+  // Scrappy tail-recursive implementation,  may be required later.
+  implicit val Navigation: Navigation[Area] = AreaLogic.SafeAreaNavigation
+
+  implicit val AreaPathing: Pathing[Area] = AreaLogic.AreaPathing
+
+  implicit val AreaNavigation: Navigation[Area] = AreaLogic.SafeAreaNavigation
+}
+
+private[domain] object AreaLogic {
+
   implicit val LocatePosition: LocatePosition[Area, Option[Place]] =
     (a: Area, position: Position) => a.value.get(position)
 
@@ -58,7 +76,7 @@ object Area {
     }
   }
 
-  implicit val AreaNavigation: Navigation[Area] = new Navigation[Area] {
+  private[domain] val UnsafeAreaNavigation: Navigation[Area] = new Navigation[Area] {
     override def suggestRoute[B: MoveCosts](a: Area, mover: B, from: Position, to: Position)(
       implicit pathing: Pathing[Area]): Route = {
       import LocatePositionSyntax._
@@ -101,11 +119,9 @@ object Area {
       loop(currentPosition = from, turn = 0, route = List.empty, bestRoute = Route(List.empty))
     }
   }
-}
 
-object TrArea{
   // Scrappy tail-recursive implementation, but may be required later.
-  val Navigation = new Navigation[Area] {
+  private[domain] val SafeAreaNavigation = new Navigation[Area] {
     import bouken.LocatePositionSyntax._
     override def suggestRoute[B: MoveCosts](a: Area, mover: B, from: Position, to: Position
                                            )(implicit pathing: Pathing[Area]): Route = {
