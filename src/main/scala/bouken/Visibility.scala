@@ -16,7 +16,5 @@ object VisibilitySyntax {
 trait Sight[B] {
   def visionCost(b: B, place: Place): Double
 
-  def canSeeThrough(b: B, tile: Tile): Boolean
-
   val range: Int
 }

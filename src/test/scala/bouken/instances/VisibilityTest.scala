@@ -52,8 +52,6 @@ object VisibilityTest {
       case Wall => 99
     }
 
-    override def canSeeThrough(b: Player, tile: Tile): Boolean = ???
-
     override val range: Int = 5
   }
 }
