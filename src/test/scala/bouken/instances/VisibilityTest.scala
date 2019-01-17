@@ -14,6 +14,10 @@ class VisibilityTest extends FreeSpec with Matchers {
     "UpdateVisibility" - {
       val updatedArea = blankArea.updateVisibility(player, Position(10, 10))
 
+      "current occupied tile is visible range" in {
+        updatedArea.value(Position(10, 10)).visible shouldBe true
+      }
+
       "updates visibility of tiles in range" in {
         updatedArea.value(Position(14, 14)).visible shouldBe true
         updatedArea.value(Position(15, 15)).visible shouldBe true
@@ -37,7 +41,7 @@ object VisibilityTest {
       x <- 0 to 20
       y <- 0 to 20
       position = Position(x, y)
-      place = Place(visible = true, Ground, Empty, NoEffect)
+      place = Place(visible = false, Ground, Empty, NoEffect)
     } yield position -> place
     ).toMap
 
