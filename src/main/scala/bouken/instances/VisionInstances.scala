@@ -1,16 +1,25 @@
 package bouken.instances
 
-import bouken.{Position, Sight, Visibility}
+import scala.annotation.tailrec
+
 import bouken.domain.{Area, Place}
+import bouken.{Position, Sight, Visibility}
+import bouken.SightSyntax._
 
 object VisionInstances {
 
   implicit val AreaVision: Visibility[Area] = new Visibility[Area] {
 
+    case class Coord(x: Int, y: Int)
+
     override def updateVisibility[S: Sight](a: Area, s: S, position: Position): Area = {
       val sight: Sight[S] = implicitly[Sight[S]]
 
       val result = updateVisibility(a.value, position)
+
+
+      // This needs tidying, IDK WTF is going on anymore
+
 
       Area(result)
     }
@@ -21,23 +30,24 @@ object VisionInstances {
         .map(_.copy(visible = true))
         .fold(area)(p => area + (position -> p))
 
-    private def makeLines[S](sight: Sight[S], originalPosition: Position): Set[Position] = {
+    private def makeLines[S : Sight](s: S, originalPosition: Position): Set[Position] = {
+      val sight: Sight[S] = implicitly[Sight[S]]
 
-      val rng = List.range(sight.range, sight.range + 1).filter(_ != 0)
+      val rng = List.range(sight.range.toInt, sight.range.toInt + 1).filter(_ != 0)
 
       rangeToPositions(rng)
-          .flatMap(makeLine(sight, ???, originalPosition, _))
-          .toSet
-          .filter(pos => (pos.x <= originalPosition.x + sight.range) && (pos.y <= originalPosition.y + sight.range))
-          .filter(pos => (pos.x >= originalPosition.x - sight.range) && (pos.y >= originalPosition.y - sight.range))
+        .flatMap(makeLine(sight, ???, originalPosition, _))
+        .toSet
+        .filter(pos => (pos.x <= originalPosition.x + sight.range) && (pos.y <= originalPosition.y + sight.range))
+        .filter(pos => (pos.x >= originalPosition.x - sight.range) && (pos.y >= originalPosition.y - sight.range))
     }
 
     //makeLine(limit + 2, area, (x, y), dxdy))
-    private def makeLine[S](sight: Sight[S], area: Area, originalPosition: Position, deltaPosition: Position): List[Position] = {
-      val (ffx, ffy) =
+    private def makeLine[S : Sight](s: S, area: Area, originalPosition: Position, deltaPosition: Position): List[Position] = {
+      val (ffx, ffy) = // Int => Int, Int => Int
         (
           if (deltaPosition.x == 0) (x: Int) => x
-          else if (deltaPosition.x > 0) (x: Int) => x+1
+          else if (deltaPosition.x > 0) (x: Int) => x + 1
           else (x: Int) => x - 1
           ,
           if (deltaPosition.y == 0) (y: Int) => y
@@ -46,37 +56,45 @@ object VisionInstances {
         )
 
 
-//      let rec loop = (i, ix, iy, acc) => {
-//        let nx = ffx(ix);
-//        let ny = ffy(iy);
-//        if (i > distance) acc
-//        else if (List.length(acc) == 0) loop(i, ix, iy, [ (ox, oy), ... acc])
-//        else if (nx == dx && ny == dy) {
-//          let (hx, hy) = List.hd(acc);
-//          if (cannotSeeThrough((ffx(hx), ffy(hy)))) [ (ffx(hx), ffy(hy)), ... acc]
-//          else loop(i + 1, 0, 0, [ (ffx(hx), ffy(hy)), ... acc]) }
-//        else if (nx == dx && dy != 0) {
-//          let (hx, hy) = List.hd(acc);
-//          if (cannotSeeThrough((ffx(hx), hy))) [ (ffx(hx), hy ), ... acc]
-//          else loop(i + 1, 0, ny, [ (ffx(hx), hy ), ... acc]) }
-//        else if (ny == dy) {
-//          let (hx, hy) = List.hd(acc);
-//          if (cannotSeeThrough(( hx, ffy(hy)))) [ (hx, ffy(hy)), ... acc]
-//          else loop(i + 1, nx, 0, [ (hx, ffy(hy)), ... acc]) }
-//        else loop(i, nx, ny, acc);
-//      };
-//
-//      loop(0, 0, 0, []);
+      @tailrec
+      def loop(i: Double, ix: Int, iy: Int, acc: List[Position]): List[Position] = {
+        val nx = ffx(ix)
+        val ny = ffy(iy)
+        if (i > s.range) acc
+        else if (acc.isEmpty) loop(i, ix, iy, List(Position(ix, iy)))
+        else if (nx == deltaPosition.x && ny == deltaPosition.y) {
+          val head = acc.head
+          val newPosition: Position = Position(ffx(head.x), ffy(head.y))
+          val cost: Double = area.value.get(newPosition).map(s.visionCost).getOrElse(99d)
+          if (i + cost > s.range) newPosition +: acc
+          else loop(i + cost, 0, 0, newPosition +: acc)
+        }
+        else if (nx == deltaPosition.x && deltaPosition.y != 0) {
+          val head = acc.head
+          val newPosition: Position = Position(ffx(head.x), head.y)
+          val cost: Double = area.value.get(newPosition).map(s.visionCost).getOrElse(99d)
+          if (i + cost > s.range) newPosition +: acc
+          else loop(i + cost, 0, ny, newPosition +: acc)
+        }
+        else if (ny == deltaPosition.y) {
+          val head = acc.head
+          val newPosition: Position = Position(head.x, ffy(head.y))
+          val cost: Double = area.value.get(newPosition).map(s.visionCost).getOrElse(99d)
+          if (i + cost > s.range) newPosition +: acc
+          else loop(i + cost, nx, ny, newPosition +: acc)
+        }
+        else loop(i, nx, ny, acc)
+      }
 
-      ???
+      loop(0, 0, 0, List.empty)
     }
 
     private def rangeToPositions(rng: List[Int]): List[Position] =
       List(Position(0, 1), Position(0, -1), Position(1, 0), Position(-1, 0)) ++ (
-        for {
-          x <- rng
-          y <- rng
-        } yield Position(x, y)
-      )
+          for {
+            x <- rng
+            y <- rng
+          } yield Position(x, y)
+        )
   }
 }

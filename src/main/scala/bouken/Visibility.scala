@@ -1,6 +1,6 @@
 package bouken
 
-import bouken.domain.{Place, Tile}
+import bouken.domain.Place
 
 trait Visibility[A] {
   def updateVisibility[S: Sight](a: A, s: S, position: Position): A
@@ -16,5 +16,15 @@ object VisibilitySyntax {
 trait Sight[B] {
   def visionCost(b: B, place: Place): Double
 
-  val range: Int
+  val range: Double
+}
+
+object SightSyntax {
+  implicit class SightSyntaxOps[A](val a: A) extends AnyVal {
+    def range(implicit S: Sight[A]): Double =
+      S.range
+
+    def visionCost(place: Place)(implicit S: Sight[A]): Double =
+      S.visionCost(a, place)
+  }
 }
