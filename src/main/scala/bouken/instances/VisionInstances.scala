@@ -6,25 +6,20 @@ import bouken.domain.{Area, Place}
 import bouken.{Position, Sight, Visibility}
 import bouken.SightSyntax._
 
+
 object VisionInstances {
 
   implicit val AreaVision: Visibility[Area] = new Visibility[Area] {
 
     override def updateVisibility[S: Sight](a: Area, s: S, position: Position): Area = {
-//      val sight: Sight[S] = implicitly[Sight[S]]
-//
-//      val result = updateVisibility(a.value, position)
 
       val lines = makeLines(s, a, position)
-
-      println(lines)
-      println("£££££££££££££££££")
 
       val rr: Map[Position, Place] = a.value
         .withFilter(pp => lines.contains(pp._1))
         .map(pp => (pp._1, pp._2.copy(visible = true)))
 
-      println(rr)
+      println("Updates: " + rr)
 
       Area(a.value ++ rr)
     }
@@ -38,7 +33,7 @@ object VisionInstances {
     private def makeLines[S : Sight](s: S, area: Area, originalPosition: Position): Set[Position] = {
       val sight: Sight[S] = implicitly[Sight[S]]
 
-      val rng = List.range(sight.range.toInt, sight.range.toInt + 1).filter(_ != 0)
+      val rng = List.range(-sight.range.toInt, sight.range.toInt + 1).filter(_ != 0)
 
       rangeToPositions(rng)
         .flatMap(makeLine(s, area, originalPosition, _))
@@ -65,8 +60,9 @@ object VisionInstances {
       def loop(i: Double, ix: Int, iy: Int, acc: List[Position]): List[Position] = {
         val nx = ffx(ix)
         val ny = ffy(iy)
+
         if (i > s.range) acc
-        else if (acc.isEmpty) loop(i, ix, iy, List(Position(ix, iy)))
+        else if (acc.isEmpty) loop(i, ix, iy, List(originalPosition))
         else if (nx == deltaPosition.x && ny == deltaPosition.y) {
           val head = acc.head
           val newPosition: Position = Position(ffx(head.x), ffy(head.y))
