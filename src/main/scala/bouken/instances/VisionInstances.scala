@@ -19,8 +19,6 @@ object VisionInstances {
         .withFilter(pp => lines.contains(pp._1))
         .map(pp => (pp._1, pp._2.copy(visible = true)))
 
-      println("Updates: " + rr)
-
       Area(a.value ++ rr)
     }
 
