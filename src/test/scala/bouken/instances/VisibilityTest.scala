@@ -56,6 +56,6 @@ object VisibilityTest {
       case Wall => 99
     }
 
-    override val range: Int = 5
+    override val range: Double = 5
   }
 }

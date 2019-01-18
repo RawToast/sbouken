@@ -10,18 +10,23 @@ object VisionInstances {
 
   implicit val AreaVision: Visibility[Area] = new Visibility[Area] {
 
-    case class Coord(x: Int, y: Int)
-
     override def updateVisibility[S: Sight](a: Area, s: S, position: Position): Area = {
-      val sight: Sight[S] = implicitly[Sight[S]]
+//      val sight: Sight[S] = implicitly[Sight[S]]
+//
+//      val result = updateVisibility(a.value, position)
 
-      val result = updateVisibility(a.value, position)
+      val lines = makeLines(s, a, position)
 
+      println(lines)
+      println("£££££££££££££££££")
 
-      // This needs tidying, IDK WTF is going on anymore
+      val rr: Map[Position, Place] = a.value
+        .withFilter(pp => lines.contains(pp._1))
+        .map(pp => (pp._1, pp._2.copy(visible = true)))
 
+      println(rr)
 
-      Area(result)
+      Area(a.value ++ rr)
     }
 
     private def updateVisibility(area: Map[Position, Place], position: Position) =
@@ -30,16 +35,16 @@ object VisionInstances {
         .map(_.copy(visible = true))
         .fold(area)(p => area + (position -> p))
 
-    private def makeLines[S : Sight](s: S, originalPosition: Position): Set[Position] = {
+    private def makeLines[S : Sight](s: S, area: Area, originalPosition: Position): Set[Position] = {
       val sight: Sight[S] = implicitly[Sight[S]]
 
       val rng = List.range(sight.range.toInt, sight.range.toInt + 1).filter(_ != 0)
 
       rangeToPositions(rng)
-        .flatMap(makeLine(sight, ???, originalPosition, _))
+        .flatMap(makeLine(s, area, originalPosition, _))
         .toSet
-        .filter(pos => (pos.x <= originalPosition.x + sight.range) && (pos.y <= originalPosition.y + sight.range))
-        .filter(pos => (pos.x >= originalPosition.x - sight.range) && (pos.y >= originalPosition.y - sight.range))
+        .filter(pos => (pos.x <= originalPosition.x + sight.range.toInt) && (pos.y <= originalPosition.y + sight.range.toInt))
+        .filter(pos => (pos.x >= originalPosition.x - sight.range.toInt) && (pos.y >= originalPosition.y - sight.range.toInt))
     }
 
     //makeLine(limit + 2, area, (x, y), dxdy))
