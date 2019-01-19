@@ -6,7 +6,7 @@ case class Area(value: Map[Position, Place]) extends AnyVal
 case class Route(value: List[Position]) extends AnyVal
 
 object Area {
-  implicit val LocatePosition: LocatePosition[Area, Option[Place]] = AreaLogic.LocatePosition
+  implicit val LocatePosition: LocatePosition[Area, Option[Place]] = AreaLogic.AreaLocatePosition
 
   implicit val AreaPathing: Pathing[Area] = AreaLogic.AreaPathing
 
@@ -24,11 +24,11 @@ object RecursiveArea {
 
 private[domain] object AreaLogic {
 
-  implicit val LocatePosition: LocatePosition[Area, Option[Place]] =
+  implicit val AreaLocatePosition: LocatePosition[Area, Option[Place]] =
     (a: Area, position: Position) => a.value.get(position)
 
   implicit val AreaPathing: Pathing[Area] = new Pathing[Area] {
-    import LocatePositionSyntax._
+    import LocatePosition.ops._
     override def canNavigate(a: Area, from: Position, to: Position, limit: Int): Boolean = {
 
       def loop(currentPosition: Position, turn: Int, route: Seq[Position], canNavi: Boolean): Boolean =
@@ -79,7 +79,7 @@ private[domain] object AreaLogic {
   private[domain] val UnsafeAreaNavigation: Navigation[Area] = new Navigation[Area] {
     override def suggestRoute[B: MoveCosts](a: Area, mover: B, from: Position, to: Position)(
       implicit pathing: Pathing[Area]): Route = {
-      import LocatePositionSyntax._
+      import LocatePosition.ops._
 
       val costCalc: MoveCosts[B] = implicitly[MoveCosts[B]]
       def placeCost(place: Position) = a.find(place).map(costCalc.moveCost(mover, _)).getOrElse(99d)
@@ -122,7 +122,7 @@ private[domain] object AreaLogic {
 
   // Scrappy tail-recursive implementation, but may be required later.
   private[domain] val SafeAreaNavigation = new Navigation[Area] {
-    import bouken.LocatePositionSyntax._
+    import LocatePosition.ops._
     override def suggestRoute[B: MoveCosts](a: Area, mover: B, from: Position, to: Position
                                            )(implicit pathing: Pathing[Area]): Route = {
       case class CostedRoute(a: Route, cost: Double)

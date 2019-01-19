@@ -8,7 +8,7 @@ class PathingTest extends FreeSpec with Matchers {
   import PathingTest._
 
   "Pathing" - {
-    import PathingSyntax._
+    import Pathing.ops._
     "isOutOfBounds" - {
       "is true when given a negative X Position" in {
         blankArea.isOutOfBounds(Position(-1, 0)) shouldBe true
@@ -119,7 +119,7 @@ class PathingTest extends FreeSpec with Matchers {
   }
 
   "Find Position" - {
-      import LocatePositionSyntax._
+      import LocatePosition.ops._
       "Returns a place if one exists" in {
         val result = blankArea.find(Position(0, 0))
 
