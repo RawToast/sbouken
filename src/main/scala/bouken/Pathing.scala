@@ -1,5 +1,7 @@
 package bouken
 
+import simulacrum._
+
 import bouken.domain.{Place, Route}
 
 case class Position(x: Int, y: Int)
@@ -30,7 +32,7 @@ object PathingSyntax {
   }
 }
 
-trait Navigation[A] {
+@typeclass trait Navigation[A] {
   def suggestRoute[B: MoveCosts](a: A, mover: B, from: Position, to: Position)(implicit pathing: Pathing[A]): Route
 }
 

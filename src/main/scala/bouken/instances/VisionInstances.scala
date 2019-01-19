@@ -4,8 +4,7 @@ import scala.annotation.tailrec
 
 import bouken.domain.{Area, Place}
 import bouken.{Position, Sight, Visibility}
-import bouken.SightSyntax._
-
+import bouken.Sight.ops._
 
 object VisionInstances {
 
