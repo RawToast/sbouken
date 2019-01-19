@@ -22,12 +22,6 @@ object VisionInstances {
       Area(a.value ++ rr)
     }
 
-    private def updateVisibility(area: Map[Position, Place], position: Position) =
-      area
-        .get(position)
-        .map(_.copy(visible = true))
-        .fold(area)(p => area + (position -> p))
-
     private def makeLines[S : Sight](s: S, area: Area, originalPosition: Position): Set[Position] = {
       val sight: Sight[S] = implicitly[Sight[S]]
 
