@@ -80,9 +80,9 @@ private[domain] object AreaLogic {
     override def suggestRoute[B: MoveCosts](a: Area, mover: B, from: Position, to: Position)(
       implicit pathing: Pathing[Area]): Route = {
       import LocatePosition.ops._
+      import MoveCosts.ops._
 
-      val costCalc: MoveCosts[B] = implicitly[MoveCosts[B]]
-      def placeCost(place: Position) = a.find(place).map(costCalc.moveCost(mover, _)).getOrElse(99d)
+      def placeCost(place: Position) = a.find(place).map(mover.moveCost).getOrElse(99d)
 
       val limit = 9 // move
 
@@ -123,13 +123,14 @@ private[domain] object AreaLogic {
   // Scrappy tail-recursive implementation, but may be required later.
   private[domain] val SafeAreaNavigation = new Navigation[Area] {
     import LocatePosition.ops._
+    import MoveCosts.ops._
+
     override def suggestRoute[B: MoveCosts](a: Area, mover: B, from: Position, to: Position
                                            )(implicit pathing: Pathing[Area]): Route = {
       case class CostedRoute(a: Route, cost: Double)
 
       val limit = 9
-      val costCalc: MoveCosts[B] = implicitly[MoveCosts[B]]
-      def placeCost(place: Position) = a.find(place).map(costCalc.moveCost(mover, _)).getOrElse(99d)
+      def placeCost(place: Position) = a.find(place).map(mover.moveCost).getOrElse(99d)
 
       @scala.annotation.tailrec
       def bestloop(turn: Int, positions: List[Route], bestRoute: Option[Route]): Option[Route] = {

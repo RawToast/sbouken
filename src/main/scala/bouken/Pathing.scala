@@ -33,6 +33,6 @@ object LocatePosition {
   }
 }
 
-trait MoveCosts[B] {
+@typeclass trait MoveCosts[B] {
   def moveCost(b: B, place: Place): Double
 }
