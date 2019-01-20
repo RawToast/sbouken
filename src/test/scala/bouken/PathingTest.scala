@@ -138,7 +138,6 @@ class PathingTest extends FreeSpec with Matchers {
     "When a single route exists" - {
       val start = Position(0, 0)
       val finish = Position(0, 2)
-
       lazy val result = horseShoe.suggestRoute(WallWalker("Dave"), start, finish)
 
       "Suggests a single route" in {
