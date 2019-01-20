@@ -10,8 +10,8 @@ case class Enemy(kind: EnemyKind, health: Health) extends Occupier
 object Enemy {
   def apply(kind: EnemyKind): Enemy =
     kind match {
-      case Zombie => new Enemy(Zombie, Health(5))
-      case Gnoll => new Enemy(Gnoll, Health(3))
+      case Zombie   => new Enemy(Zombie, Health(5))
+      case Gnoll    => new Enemy(Gnoll, Health(3))
       case Minotaur => new Enemy(Minotaur, Health(10))
     }
 }

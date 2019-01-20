@@ -21,50 +21,54 @@ object PlaceParser {
       case ";" => Some(Snare(2))
       case "+" => Some(Heal(2))
       case "g" => Some(Gold(3))
-      case _ => None
+      case _   => None
     }
 
     val enemy = otherStr match {
       case "Z" => Some(Enemy(Zombie))
       case "X" => Some(Enemy(Gnoll))
       case "M" => Some(Enemy(Minotaur))
-      case _ => None
+      case _   => None
     }
 
     (effect, enemy) match {
       case (Some(e), _) => makeTile(tile, tileEffect = e)
       case (_, Some(e)) => makeTile(tile, state = e)
-      case _ => makeTile(tile)
+      case _            => makeTile(tile)
     }
   }
 
   private def parseTile(string: String) =
     string match {
-      case "." => Ground
-      case ":" => Rough
-      case "#" => Wall
-      case "w" => Water
-      case e if e.startsWith("e") && Try(e.drop(1).toInt).toOption.isDefined => Exit(Score(e.tail.toInt))
-      case s if stairsCheck(s) => makeStairs(s)
-      case _ => Ground
+      case "."              => Ground
+      case ":"              => Rough
+      case "#"              => Wall
+      case "w"              => Water
+      case e if isExit(e)   => Exit(Score(e.tail.toInt))
+      case s if isStairs(s) => makeStairs(s)
+      case _                => Ground
     }
 
   private def makeTile(
-                        tile: Tile = Ground,
-                        visible: Boolean = false,
-                        state: Occupier = Empty,
-                        tileEffect: TileEffect = NoEffect
-                      ) = Place(
+    tile: Tile = Ground,
+    visible: Boolean = false,
+    state: Occupier = Empty,
+    tileEffect: TileEffect = NoEffect
+  ) = Place(
     visible,
     tile,
     state,
     tileEffect
   )
 
-  private def stairsCheck(string: String): Boolean =
+  private def isStairs(string: String): Boolean =
     string.length >= 3 &&
       string.charAt(0) == '/' &&
       Try(string.charAt(1).toInt).toOption.isDefined
+
+  private def isExit(string: String): Boolean =
+    string.startsWith("e") &&
+      Try(string.drop(1).toInt).toOption.isDefined
 
   private def makeStairs(string: String): Stairs = {
     val value = string.tail
