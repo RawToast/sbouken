@@ -8,7 +8,7 @@ class VisionInstancesTest extends FreeSpec with Matchers {
 
   import VisionInstancesTest._
 
-  import bouken.VisibilitySyntax._
+  import bouken.Visibility.ops._
   import bouken.instances.VisionInstances._
 
   "Visibility" - {

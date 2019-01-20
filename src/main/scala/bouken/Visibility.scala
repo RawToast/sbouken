@@ -1,16 +1,11 @@
 package bouken
 
+import simulacrum._
+
 import bouken.domain.Place
 
-trait Visibility[A] {
+@typeclass trait Visibility[A] {
   def updateVisibility[S: Sight](a: A, s: S, position: Position): A
-}
-
-object VisibilitySyntax {
-  implicit class VisibilitySyntaxOps[A](val a: A) extends AnyVal {
-    def updateVisibility[S: Sight](s: S, position: Position)(implicit sight: Visibility[A]): A =
-      sight.updateVisibility(a, s, position)
-  }
 }
 
 trait Sight[B] {
@@ -19,12 +14,14 @@ trait Sight[B] {
   val range: Double
 }
 
-object SightSyntax {
-  implicit class SightSyntaxOps[A](val a: A) extends AnyVal {
-    def range(implicit S: Sight[A]): Double =
-      S.range
+object Sight {
+  object ops {
+    implicit class Syntax[A](val a: A) extends AnyVal {
+      def range(implicit S: Sight[A]): Double =
+        S.range
 
-    def visionCost(place: Place)(implicit S: Sight[A]): Double =
-      S.visionCost(a, place)
+      def visionCost(place: Place)(implicit S: Sight[A]): Double =
+        S.visionCost(a, place)
+    }
   }
 }

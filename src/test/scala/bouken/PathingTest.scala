@@ -8,7 +8,7 @@ class PathingTest extends FreeSpec with Matchers {
   import PathingTest._
 
   "Pathing" - {
-    import PathingSyntax._
+    import Pathing.ops._
     "isOutOfBounds" - {
       "is true when given a negative X Position" in {
         blankArea.isOutOfBounds(Position(-1, 0)) shouldBe true
@@ -119,7 +119,7 @@ class PathingTest extends FreeSpec with Matchers {
   }
 
   "Find Position" - {
-      import LocatePositionSyntax._
+      import LocatePosition.ops._
       "Returns a place if one exists" in {
         val result = blankArea.find(Position(0, 0))
 
@@ -134,10 +134,11 @@ class PathingTest extends FreeSpec with Matchers {
   }
 
   "Suggest Route" - {
+    import Navigation.ops._
     "When a single route exists" - {
       val start = Position(0, 0)
       val finish = Position(0, 2)
-      lazy val result = Area.AreaNavigation.suggestRoute(horseShoe, WallWalker("Dave"), start, finish)
+      lazy val result = horseShoe.suggestRoute(WallWalker("Dave"), start, finish)
 
       "Suggests a single route" in {
         result.value.size shouldBe 2
@@ -150,7 +151,7 @@ class PathingTest extends FreeSpec with Matchers {
     "When multiple routes exist" - {
       val start = Position(0, 3)
       val finish = Position(2, 3)
-      lazy val result = Area.AreaNavigation.suggestRoute(horseShoe, WallWalker("Dave"), start, finish)
+      lazy val result = horseShoe.suggestRoute(WallWalker("Dave"), start, finish)
 
       "Suggests a single route" in {
         result.value.isEmpty shouldBe false
