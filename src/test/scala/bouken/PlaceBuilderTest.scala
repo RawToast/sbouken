@@ -8,52 +8,109 @@ import scala.util.Try
 class PlaceBuilderTest extends FreeSpec with Matchers {
 
   "PlaceBuilder" - {
-    "when given '.'" - {
-      val place = PlaceBuilder.parse(".")
-      "creates a ground tile" in {
-        place.tile shouldBe Ground
+    "should build a basic tile" - {
+
+      "when given '.'" - {
+        val place = PlaceBuilder.parse(".")
+        "creates a ground tile" in {
+          place.tile shouldBe Ground
+        }
+        "that is empty" in {
+          place.state shouldBe Empty
+        }
+        "is not visible" in {
+          place.visible shouldBe false
+        }
+        "and has no effect" in {
+          place.tileEffect shouldBe NoEffect
+        }
       }
-      "that is empty" in {
-        place.state shouldBe Empty
+
+      "when given '#'" - {
+        val place = PlaceBuilder.parse("#")
+        "creates a wall tile" in {
+          place.tile shouldBe Wall
+        }
       }
-      "is not visible" in {
-        place.visible shouldBe false
+
+      "when given ':'" - {
+        val place = PlaceBuilder.parse(":")
+        "creates a rough tile" in {
+          place.tile shouldBe Rough
+        }
       }
-      "and has no effect" in {
-        place.tileEffect shouldBe NoEffect
+
+      "when given 'w'" - {
+        val place = PlaceBuilder.parse("w")
+        "creates a water tile" in {
+          place.tile shouldBe Water
+        }
+      }
+
+      "when given 'e50'" - {
+        val place = PlaceBuilder.parse("e50")
+        "creates an exit tile" in {
+          place.tile shouldBe a[Exit]
+        }
+        "with score 50" in {
+          place.tile shouldBe Exit(Score(50))
+        }
+      }
+
+      "when given '0Swamp'" - {
+        val place = PlaceBuilder.parse("""/0Swamp""")
+        "creates a stair tile" in {
+          place.tile shouldBe Stairs(To(0, "Swamp"))
+        }
       }
     }
-    "when given '#'" - {
-      val place = PlaceBuilder.parse("#")
-      "creates a wall tile" in {
-        place.tile shouldBe Wall
+
+    "should build a place with an effect" - {
+
+      "when given '.|,'" - {
+        val place = PlaceBuilder.parse(".|,")
+        "creates a ground tile" in {
+          place.tile shouldBe Ground
+        }
+        "that is empty" in {
+          place.state shouldBe Empty
+        }
+        "is not visible" in {
+          place.visible shouldBe false
+        }
+        "and contains a trap" in {
+          place.tileEffect shouldBe a[Trap]
+        }
       }
-    }
-    "when given ':'" - {
-      val place = PlaceBuilder.parse(":")
-      "creates a rough tile" in {
-        place.tile shouldBe Rough
+
+      "when given '.|;'" - {
+        val place = PlaceBuilder.parse(".|;")
+        "creates a ground tile" in {
+          place.tile shouldBe Ground
+        }
+        "containing a snare" in {
+          place.tileEffect shouldBe a[Snare]
+        }
       }
-    }
-    "when given 'w'" - {
-      val place = PlaceBuilder.parse("w")
-      "creates a water tile" in {
-        place.tile shouldBe Water
+
+      "when given '.|+'" - {
+        val place = PlaceBuilder.parse(".|+")
+        "creates a ground tile" in {
+          place.tile shouldBe Ground
+        }
+        "containing health" in {
+          place.tileEffect shouldBe a[Heal]
+        }
       }
-    }
-    "when given 'e50'" - {
-      val place = PlaceBuilder.parse("e50")
-      "creates an exit tile" in {
-        place.tile shouldBe a[Exit]
-      }
-      "with score 50" in {
-        place.tile shouldBe Exit(Score(50))
-      }
-    }
-    "when given '0Swamp'" - {
-      val place = PlaceBuilder.parse("""/0Swamp""")
-      "creates a stair tile" in {
-        place.tile shouldBe Stairs(To(0, "Swamp"))
+
+      "when given '.|g'" - {
+        val place = PlaceBuilder.parse(".|g")
+        "creates a ground tile" in {
+          place.tile shouldBe Ground
+        }
+        "containing gold" in {
+          place.tileEffect shouldBe a[Gold]
+        }
       }
     }
   }
@@ -62,8 +119,28 @@ class PlaceBuilderTest extends FreeSpec with Matchers {
 object PlaceBuilder {
 
   def parse(value: String): Place =
-    if (value.exists(_ == '|')) EmptyTile
+    if (value.exists(_ == '|')) handleComplexPlace(value)
     else makeTile(parseTile(value))
+
+  private def handleComplexPlace(value: String): Place = {
+    val tileStr = value.takeWhile(_ != '|')
+    val otherStr = value.dropWhile(_ != '|').tail
+
+    val tile = parseTile(tileStr)
+
+    val effect = otherStr match {
+      case "," => Some(Trap(2))
+      case ";" => Some(Snare(2))
+      case "+" => Some(Heal(2))
+      case "g" => Some(Gold(3))
+      case _   => None
+    }
+
+    effect match {
+      case Some(e) => makeTile(tile, tileEffect = e)
+      case _ => makeTile(tile)
+    }
+  }
 
   private def parseTile(string: String) =
     string match {
