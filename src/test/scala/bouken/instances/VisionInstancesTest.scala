@@ -113,7 +113,7 @@ object VisionInstancesTest {
 
   val blankArea: Area = Area(blankMap)
 
-  val player = Player("test")
+  val player = Player("test", Health(10))
   implicit val basicPlayerSight: Sight[Player] = new Sight[Player] {
     override def visionCost(b: Player, place: Place): Double = place.tile match {
       case Ground => 1.0

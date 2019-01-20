@@ -113,6 +113,48 @@ class PlaceBuilderTest extends FreeSpec with Matchers {
         }
       }
     }
+
+    "should build a place with an occupier" - {
+
+      "when given '.|Z'" - {
+        val place = PlaceBuilder.parse(".|Z")
+        "creates a ground tile" in {
+          place.tile shouldBe Ground
+        }
+        "is not visible" in {
+          place.visible shouldBe false
+        }
+        "has no tile effects" in {
+          place.tileEffect shouldBe NoEffect
+        }
+        "is occupied by an Enemy" in {
+          place.state shouldBe a[Enemy]
+        }
+        "which is a Zombie" in {
+          place.state shouldBe Enemy(Zombie)
+        }
+      }
+
+      "when given '.|X'" - {
+        val place = PlaceBuilder.parse(".|X")
+        "creates a tile occupied by an Enemy" in {
+          place.state shouldBe a[Enemy]
+        }
+        "which is a Gnoll" in {
+          place.state shouldBe Enemy(Gnoll)
+        }
+      }
+
+      "when given '.|M'" - {
+        val place = PlaceBuilder.parse(".|M")
+        "creates a tile occupied by an Enemy" in {
+          place.state shouldBe a[Enemy]
+        }
+        "which is a Minotaur" in {
+          place.state shouldBe Enemy(Minotaur)
+        }
+      }
+    }
   }
 }
 
@@ -136,8 +178,16 @@ object PlaceBuilder {
       case _   => None
     }
 
-    effect match {
-      case Some(e) => makeTile(tile, tileEffect = e)
+    val enemy = otherStr match {
+      case "Z" => Some(Enemy(Zombie))
+      case "X" => Some(Enemy(Gnoll))
+      case "M" => Some(Enemy(Minotaur))
+      case _   => None
+    }
+
+    (effect, enemy) match {
+      case (Some(e), _) => makeTile(tile, tileEffect = e)
+      case (_, Some(e)) => makeTile(tile, state = e)
       case _ => makeTile(tile)
     }
   }
