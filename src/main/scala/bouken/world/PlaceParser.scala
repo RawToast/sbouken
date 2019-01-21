@@ -4,7 +4,11 @@ import bouken.domain._
 
 import scala.util.Try
 
-object PlaceParser {
+trait PlaceParser {
+  def parse(value: String): Place
+}
+
+object PlaceParser extends PlaceParser {
 
   def parse(value: String): Place =
     if (value.exists(_ == '|')) handleComplexPlace(value)
