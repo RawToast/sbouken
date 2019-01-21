@@ -10,5 +10,10 @@ case object Water extends Tile
 
 case object Wall extends Tile
 
-//case class Stairs(???) extends Tile
-//case class Exit(???) extends Tile
+case class Stairs(to: To) extends Tile
+
+case class Exit(score: Score) extends Tile
+
+case class Score(value: Int) extends AnyVal
+
+case class To(id: Int, level: String)

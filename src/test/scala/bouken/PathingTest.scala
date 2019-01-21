@@ -224,6 +224,8 @@ object PathingTest {
       case Rough => 2d
       case Wall => 5d
       case Water => 3d
+      case Stairs(_) => 1d
+      case Exit(_) => 1d
     }
   }
 }
