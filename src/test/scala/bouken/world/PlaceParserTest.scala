@@ -3,8 +3,6 @@ package bouken.world
 import bouken.domain._
 import org.scalatest.{FreeSpec, Matchers}
 
-import scala.util.Try
-
 class PlaceParserTest extends FreeSpec with Matchers {
 
   "PlaceParser" - {

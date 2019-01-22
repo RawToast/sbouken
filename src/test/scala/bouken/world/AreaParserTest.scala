@@ -7,7 +7,6 @@ import org.scalatest.{FreeSpec, Matchers}
 class AreaParserTest extends FreeSpec with Matchers {
 
   "AreaParser" - {
-
     "when given a valid area string" - {
 
       val areaParser = AreaParser(PlaceParser)
@@ -42,9 +41,6 @@ class AreaParserTest extends FreeSpec with Matchers {
       "position (1, 2) should be a water tile" in {
         result.value.get(Position(1, 2)).map(_.tile) shouldBe Some(Water)
       }
-
     }
-
   }
-
 }
