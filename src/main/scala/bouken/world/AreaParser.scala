@@ -13,6 +13,7 @@ case class AreaParser(placeParser: PlaceParser) {
       .map(_.split(",").toList)
       .map(_.map(_.trim))
       .map(_.map(placeParser.parse))
+      .reverse
       .zipWithIndex.map {case (col, y) =>
         col.zipWithIndex.map{case (p, x) => Position(x, y) -> p }}
         .foldLeft(Map.empty[Position, Place])(_++_)
