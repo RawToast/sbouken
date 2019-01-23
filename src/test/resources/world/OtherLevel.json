@@ -1,5 +1,5 @@
 {
-    "name": "swamp",
-    "tileset": "default",
+    "name": "Swamp",
+    "tileset": "Default",
     "area": "., ., ., .\n., /0Swamp, ., .\n., ., ., ."
 }

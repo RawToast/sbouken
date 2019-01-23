@@ -2,6 +2,6 @@ package bouken.world
 
 import bouken.domain.Level
 
-trait LevelParser {
-  def parseLevel(fileName: String): Level
+trait LevelParser[T[_]] {
+  def parseLevel(fileName: String): T[Level]
 }

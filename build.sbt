@@ -17,6 +17,9 @@ libraryDependencies ++= Seq(
   "io.circe" %% "circe-core" % "0.10.0",
   "io.circe" %% "circe-generic" % "0.10.0",
   "io.circe" %% "circe-parser" % "0.10.0",
+  //enum
+  "com.beachape" %% "enumeratum" % "1.5.13",
+  "com.beachape" %% "enumeratum-circe" % "1.5.14",
   // test
   "org.scalatest" %% "scalatest" % "3.0.5" % "test"
 )
