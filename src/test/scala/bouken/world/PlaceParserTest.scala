@@ -3,15 +3,17 @@ package bouken.world
 import bouken.domain._
 import org.scalatest.{FreeSpec, Matchers}
 
-import scala.util.Try
-
 class PlaceParserTest extends FreeSpec with Matchers {
 
   "PlaceParser" - {
     "should build a basic tile" - {
 
       "when given '.'" - {
-        val place = PlaceParser.parse(".")
+        val optPlace = OptionPlaceParser.parse(".")
+        lazy val place = optPlace.get
+        "decodes successfully" in {
+          optPlace shouldBe a[Some[_]]
+        }
         "creates a ground tile" in {
           place.tile shouldBe Ground
         }
@@ -27,28 +29,32 @@ class PlaceParserTest extends FreeSpec with Matchers {
       }
 
       "when given '#'" - {
-        val place = PlaceParser.parse("#")
+        val place = OptionPlaceParser.parse("#")
         "creates a wall tile" in {
-          place.tile shouldBe Wall
+          place.map(_.tile) shouldBe Some(Wall)
         }
       }
 
       "when given ':'" - {
-        val place = PlaceParser.parse(":")
+        val place = OptionPlaceParser.parse(":")
         "creates a rough tile" in {
-          place.tile shouldBe Rough
+          place.map(_.tile) shouldBe Some(Rough)
         }
       }
 
       "when given 'w'" - {
-        val place = PlaceParser.parse("w")
+        val place = OptionPlaceParser.parse("w")
         "creates a water tile" in {
-          place.tile shouldBe Water
+          place.map(_.tile) shouldBe Some(Water)
         }
       }
 
       "when given 'e50'" - {
-        val place = PlaceParser.parse("e50")
+        val optPlace = OptionPlaceParser.parse("e50")
+        lazy val place = optPlace.get
+        "decodes successfully" in {
+          optPlace shouldBe a[Some[_]]
+        }
         "creates an exit tile" in {
           place.tile shouldBe a[Exit]
         }
@@ -58,7 +64,11 @@ class PlaceParserTest extends FreeSpec with Matchers {
       }
 
       "when given '0Swamp'" - {
-        val place = PlaceParser.parse("""/0Swamp""")
+        val optPlace = OptionPlaceParser.parse("""/0Swamp""")
+        lazy val place = optPlace.get
+        "decodes successfully" in {
+          optPlace shouldBe a[Some[_]]
+        }
         "creates a stair tile" in {
           place.tile shouldBe Stairs(To(0, "Swamp"))
         }
@@ -68,7 +78,11 @@ class PlaceParserTest extends FreeSpec with Matchers {
     "should build a place with an effect" - {
 
       "when given '.|,'" - {
-        val place = PlaceParser.parse(".|,")
+        val optPlace = OptionPlaceParser.parse(".|,")
+        lazy val place = optPlace.get
+        "decodes successfully" in {
+          optPlace shouldBe a[Some[_]]
+        }
         "creates a ground tile" in {
           place.tile shouldBe Ground
         }
@@ -84,7 +98,11 @@ class PlaceParserTest extends FreeSpec with Matchers {
       }
 
       "when given '.|;'" - {
-        val place = PlaceParser.parse(".|;")
+        val optPlace = OptionPlaceParser.parse(".|;")
+        lazy val place = optPlace.get
+        "decodes successfully" in {
+          optPlace shouldBe a[Some[_]]
+        }
         "creates a ground tile" in {
           place.tile shouldBe Ground
         }
@@ -94,7 +112,11 @@ class PlaceParserTest extends FreeSpec with Matchers {
       }
 
       "when given '.|+'" - {
-        val place = PlaceParser.parse(".|+")
+        val optPlace = OptionPlaceParser.parse(".|+")
+        lazy val place = optPlace.get
+        "decodes successfully" in {
+          optPlace shouldBe a[Some[_]]
+        }
         "creates a ground tile" in {
           place.tile shouldBe Ground
         }
@@ -104,7 +126,11 @@ class PlaceParserTest extends FreeSpec with Matchers {
       }
 
       "when given '.|g'" - {
-        val place = PlaceParser.parse(".|g")
+        val optPlace = OptionPlaceParser.parse(".|g")
+        lazy val place = optPlace.get
+        "decodes successfully" in {
+          optPlace shouldBe a[Some[_]]
+        }
         "creates a ground tile" in {
           place.tile shouldBe Ground
         }
@@ -117,7 +143,11 @@ class PlaceParserTest extends FreeSpec with Matchers {
     "should build a place with an occupier" - {
 
       "when given '.|Z'" - {
-        val place = PlaceParser.parse(".|Z")
+        val optPlace = OptionPlaceParser.parse(".|Z")
+        lazy val place = optPlace.get
+        "decodes successfully" in {
+          optPlace shouldBe a[Some[_]]
+        }
         "creates a ground tile" in {
           place.tile shouldBe Ground
         }
@@ -136,7 +166,11 @@ class PlaceParserTest extends FreeSpec with Matchers {
       }
 
       "when given '.|X'" - {
-        val place = PlaceParser.parse(".|X")
+        val optPlace = OptionPlaceParser.parse(".|X")
+        lazy val place = optPlace.get
+        "decodes successfully" in {
+          optPlace shouldBe a[Some[_]]
+        }
         "creates a tile occupied by an Enemy" in {
           place.state shouldBe a[Enemy]
         }
@@ -146,7 +180,11 @@ class PlaceParserTest extends FreeSpec with Matchers {
       }
 
       "when given '.|M'" - {
-        val place = PlaceParser.parse(".|M")
+        val optPlace = OptionPlaceParser.parse(".|M")
+        lazy val place = optPlace.get
+        "decodes successfully" in {
+          optPlace shouldBe a[Some[_]]
+        }
         "creates a tile occupied by an Enemy" in {
           place.state shouldBe a[Enemy]
         }

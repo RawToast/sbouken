@@ -13,12 +13,19 @@ resolvers ++= Seq(
 libraryDependencies ++= Seq(
   "org.typelevel" %% "cats-core" % "1.4.0",
   "com.github.mpilquist" %% "simulacrum" % "0.14.0",
+  // circe
+  "io.circe" %% "circe-core" % "0.10.0",
+  "io.circe" %% "circe-generic" % "0.10.0",
+  "io.circe" %% "circe-parser" % "0.10.0",
+  //enum
+  "com.beachape" %% "enumeratum" % "1.5.13",
+  "com.beachape" %% "enumeratum-circe" % "1.5.14",
   // test
   "org.scalatest" %% "scalatest" % "3.0.5" % "test"
 )
 
 scalacOptions += "-Ypartial-unification"
 
-addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.0" cross CrossVersion.full)
+addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.1" cross CrossVersion.full)
 
 addCommandAlias("validate", ";coverage;test;coverageReport")
