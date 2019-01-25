@@ -8,8 +8,8 @@ class LevelParserTest  extends FreeSpec with Matchers {
   "AreaParser" - {
     "when given a file containing a level in the classic structure" - {
 
-      val parser = OptionLevelParser("world", AreaParser(PlaceParser))
-      val level = parser.parseLevel("Dungeon 1.csv")
+      val parser = OptionLevelParser(AreaParser(PlaceParser))
+      val level = parser.parseLevel("world", "Dungeon 1.csv")
 
       "Uses the filename as the level name" in {
         level.map(_.name) shouldBe Some(Name("Dungeon 1"))
@@ -26,8 +26,8 @@ class LevelParserTest  extends FreeSpec with Matchers {
 
     "when given a file containing a level a json format" - {
 
-      val parser = OptionLevelParser("world", AreaParser(PlaceParser))
-      val level = parser.parseLevel("OtherLevel.json")
+      val parser = OptionLevelParser(AreaParser(PlaceParser))
+      val level = parser.parseLevel("world", "OtherLevel.json")
 
       "Uses the filename as the level name" in {
         level.map(_.name) shouldBe Some(Name("Swamp"))

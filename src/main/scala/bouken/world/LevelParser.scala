@@ -8,11 +8,11 @@ import scala.io.Source
 import scala.util.Try
 
 trait LevelParser[T[_]] {
-  def parseLevel(fileName: String): T[Level]
+  def parseLevel(directory: String, fileName: String): T[Level]
 }
 
-case class OptionLevelParser(directory: String, areaParser: AreaParser) extends LevelParser[Option] {
-  override def parseLevel(fileName: String): Option[Level] = {
+case class OptionLevelParser(areaParser: AreaParser) extends LevelParser[Option] {
+  override def parseLevel(directory: String, fileName: String): Option[Level] = {
     val (name, fileType) = fileName.span(_ != '.')
 
     if (fileType == ".csv") parseClassicLevel(directory, name)
