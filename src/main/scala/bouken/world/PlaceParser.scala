@@ -1,24 +1,24 @@
 package bouken.world
 
-import bouken.domain._
-
 import scala.util.Try
 
-trait PlaceParser {
-  def parse(value: String): Place
+import bouken.domain._
+
+trait PlaceParser[T[_]] {
+  def parse(value: String): Option[Place]
 }
 
-object PlaceParser extends PlaceParser {
+object OptionPlaceParser extends PlaceParser[Option] {
 
-  def parse(value: String): Place =
+  def parse(value: String): Option[Place] =
     if (value.exists(_ == '|')) handleComplexPlace(value)
-    else makeTile(parseTile(value))
+    else parseTile(value).map(makeTile(_))
 
-  private def handleComplexPlace(value: String): Place = {
+  private def handleComplexPlace(value: String): Option[Place] = {
     val tileStr = value.takeWhile(_ != '|')
     val otherStr = value.dropWhile(_ != '|').tail
 
-    val tile = parseTile(tileStr)
+    val tileOpt = parseTile(tileStr)
 
     val effect = otherStr match {
       case "," => Some(Trap(2))
@@ -35,22 +35,24 @@ object PlaceParser extends PlaceParser {
       case _   => None
     }
 
-    (effect, enemy) match {
-      case (Some(e), _) => makeTile(tile, tileEffect = e)
-      case (_, Some(e)) => makeTile(tile, state = e)
-      case _            => makeTile(tile)
-    }
+    tileOpt.map(tile =>
+      (effect, enemy) match {
+        case (Some(e), _) => makeTile(tile, tileEffect = e)
+        case (_, Some(e)) => makeTile(tile, state = e)
+        case _ => makeTile(tile)
+      }
+    )
   }
 
-  private def parseTile(string: String) =
+  private def parseTile(string: String): Option[Tile] =
     string match {
-      case "."              => Ground
-      case ":"              => Rough
-      case "#"              => Wall
-      case "w"              => Water
-      case e if isExit(e)   => Exit(Score(e.tail.toInt))
-      case s if isStairs(s) => makeStairs(s)
-      case _                => Ground
+      case "." => Some(Ground)
+      case ":" => Some(Rough)
+      case "#" => Some(Wall)
+      case "w" => Some(Water)
+      case e if isExit(e) => Some(Exit(Score(e.tail.toInt)))
+      case s if isStairs(s) => Some(makeStairs(s))
+      case _ => None
     }
 
   private def makeTile(

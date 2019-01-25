@@ -3,10 +3,14 @@ package bouken.world
 import bouken.Position
 import bouken.domain.{Area, Place}
 
-case class AreaParser(placeParser: PlaceParser) {
-  def parse(value: String): Area = {
+trait AreaParser[T[_]] {
+  def parse(value: String): T[Area]
+}
 
-    val cells: Map[Position, Place] = value
+case class OptionAreaParser(placeParser: PlaceParser[Option]) extends AreaParser[Option] {
+  def parse(value: String): Option[Area] = {
+
+    val possiblePlaces: List[List[Option[Place]]] = value
       .trim
       .split("\n")
       .toList
@@ -14,10 +18,20 @@ case class AreaParser(placeParser: PlaceParser) {
       .map(_.map(_.trim))
       .map(_.map(placeParser.parse))
       .reverse
-      .zipWithIndex.map {case (col, y) =>
-        col.zipWithIndex.map{case (p, x) => Position(x, y) -> p }}
-        .foldLeft(Map.empty[Position, Place])(_++_)
 
-    Area(cells)
+    val cells = if (possiblePlaces.exists(_.exists(_.isEmpty))) None
+    else Some(possiblePlaces.map(_.flatten))
+
+    cells.map(
+      _.zipWithIndex.map {
+        case (col, y) => col.zipWithIndex.map {
+          case (p, x) => Position(x, y) -> p
+        }
+      }.foldLeft(Map.empty[Position, Place])(_ ++ _))
+      .flatMap(c =>
+        if (c.isEmpty) None
+        else Some(Area(c))
+      )
+
   }
 }

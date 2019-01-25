@@ -1,17 +1,17 @@
 package bouken.world
 
-import bouken.domain.Level
-import io.circe.{Decoder, Json}
-import io.circe.parser.parse
-
 import scala.io.Source
 import scala.util.Try
+
+import bouken.domain.Level
+import io.circe.parser.parse
+import io.circe.{Decoder, Json}
 
 trait LevelParser[T[_]] {
   def parseLevel(directory: String, fileName: String): T[Level]
 }
 
-case class OptionLevelParser(areaParser: AreaParser) extends LevelParser[Option] {
+case class OptionLevelParser(areaParser: AreaParser[Option]) extends LevelParser[Option] {
   override def parseLevel(directory: String, fileName: String): Option[Level] = {
     val (name, fileType) = fileName.span(_ != '.')
 
@@ -31,7 +31,7 @@ case class OptionLevelParser(areaParser: AreaParser) extends LevelParser[Option]
     val text = readText(s"$directory/$fileName.csv")
 
     text
-      .map(areaParser.parse)
+      .flatMap(areaParser.parse)
       .map(area =>
         Level(
           area = area,
@@ -42,14 +42,13 @@ case class OptionLevelParser(areaParser: AreaParser) extends LevelParser[Option]
   }
 
   private def parseJsonLevel(directory: String, fileName: String): Option[Level] = {
-    implicit val levelDecoder: Decoder[Level] = io.circe.Decoder.instance { c =>
+    implicit val levelDecoder: Decoder[(String, Level.Name, Level.TileSet)] = io.circe.Decoder.instance { c =>
       for {
         nameStr <- c.downField("name").as[String]
         areaStr <- c.downField("area").as[String]
         tileset <- c.downField("tileset").as[Level.TileSet]
-        area = areaParser.parse(areaStr)
         name = Level.Name(nameStr)
-      } yield Level(area, name, tileset)
+      } yield (areaStr, name, tileset)
     }
 
     val textOpt = readText(s"$directory/$fileName.json")
@@ -57,7 +56,8 @@ case class OptionLevelParser(areaParser: AreaParser) extends LevelParser[Option]
     for {
       text: String <- textOpt
       json: Json <- parse(text).toOption
-      level: Level <- json.as[Level].toOption
-    } yield level
+      (str, name, set) <- json.as[(String, Level.Name, Level.TileSet)].toOption
+      area <- areaParser.parse(str)
+    } yield Level(area, name, set)
   }
 }

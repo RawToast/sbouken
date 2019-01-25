@@ -6,9 +6,11 @@ import org.scalatest.{FreeSpec, Matchers}
 class LevelParserTest  extends FreeSpec with Matchers {
 
   "AreaParser" - {
+    val parser = OptionLevelParser(OptionAreaParser(OptionPlaceParser))
+
     "when given a file containing a level in the classic structure" - {
 
-      val parser = OptionLevelParser(AreaParser(PlaceParser))
+
       val level = parser.parseLevel("world", "Dungeon 1.csv")
 
       "Uses the filename as the level name" in {
@@ -25,8 +27,6 @@ class LevelParserTest  extends FreeSpec with Matchers {
     }
 
     "when given a file containing a level a json format" - {
-
-      val parser = OptionLevelParser(AreaParser(PlaceParser))
       val level = parser.parseLevel("world", "OtherLevel.json")
 
       "Uses the filename as the level name" in {

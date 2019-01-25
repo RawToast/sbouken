@@ -9,7 +9,7 @@ class AreaParserTest extends FreeSpec with Matchers {
   "AreaParser" - {
     "when given a valid area string" - {
 
-      val areaParser = AreaParser(PlaceParser)
+      val areaParser = OptionAreaParser(OptionPlaceParser)
 
       val areaString =
         """
@@ -20,7 +20,12 @@ class AreaParserTest extends FreeSpec with Matchers {
           | ., ., ., ., .
         """.stripMargin
 
-      val result = areaParser.parse(areaString)
+      val optResult = areaParser.parse(areaString)
+      lazy val result = optResult.get
+
+      "parses successfully" in {
+        optResult shouldBe a[Some[_]]
+      }
 
       "creates an area with the correct number of rows" in {
         result.value.count(p => p._1.y == 0) shouldBe 5
