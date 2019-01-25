@@ -1,6 +1,6 @@
 package bouken.world
 
-import bouken.domain._
+import bouken.domain.Level._
 import org.scalatest.{FreeSpec, Matchers}
 
 class LevelParserTest  extends FreeSpec with Matchers {
@@ -12,7 +12,7 @@ class LevelParserTest  extends FreeSpec with Matchers {
       val level = parser.parseLevel("Dungeon 1.csv")
 
       "Uses the filename as the level name" in {
-        level.map(_.name) shouldBe Some("Dungeon 1")
+        level.map(_.name) shouldBe Some(Name("Dungeon 1"))
       }
 
       "Uses the default tileset" in {
@@ -30,7 +30,7 @@ class LevelParserTest  extends FreeSpec with Matchers {
       val level = parser.parseLevel("OtherLevel.json")
 
       "Uses the filename as the level name" in {
-        level.map(_.name) shouldBe Some("Swamp")
+        level.map(_.name) shouldBe Some(Name("Swamp"))
       }
 
       "Uses the default tileset" in {

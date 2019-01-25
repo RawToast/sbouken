@@ -1,6 +1,6 @@
 package bouken.world
 
-import bouken.domain.{Level, TileSet}
+import bouken.domain.Level
 import io.circe.{Decoder, Json}
 import io.circe.parser.parse
 
@@ -35,8 +35,8 @@ case class OptionLevelParser(directory: String, areaParser: AreaParser) extends 
       .map(area =>
         Level(
           area = area,
-          name = fileName,
-          tileSet = TileSet.Default
+          name = Level.Name(fileName),
+          tileSet = Level.TileSet.Default
         )
       )
   }
@@ -44,10 +44,11 @@ case class OptionLevelParser(directory: String, areaParser: AreaParser) extends 
   private def parseJsonLevel(directory: String, fileName: String): Option[Level] = {
     implicit val levelDecoder: Decoder[Level] = io.circe.Decoder.instance { c =>
       for {
-        name <- c.downField("name").as[String]
+        nameStr <- c.downField("name").as[String]
         areaStr <- c.downField("area").as[String]
+        tileset <- c.downField("tileset").as[Level.TileSet]
         area = areaParser.parse(areaStr)
-        tileset <- c.downField("tileset").as[TileSet]
+        name = Level.Name(nameStr)
       } yield Level(area, name, tileset)
     }
 
