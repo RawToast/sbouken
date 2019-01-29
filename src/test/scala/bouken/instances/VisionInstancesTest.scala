@@ -1,17 +1,20 @@
 package bouken.instances
 
 import bouken.domain._
-import bouken.{Position, Sight}
+import bouken.types.Sight
 import org.scalatest.{FreeSpec, Matchers}
 
 class VisionInstancesTest extends FreeSpec with Matchers {
 
   import VisionInstancesTest._
-  import bouken.Visibility.ops._
+  import bouken.syntax.vision._
   import bouken.instances.VisionInstances._
+
 
   "Visibility" - {
     "UpdateVisibility" - {
+      implicit val enemySight: Sight[Enemy] = bouken.instances.SightInstances.EnemySight
+
       val updatedArea = blankArea.updateVisibility(player, Position(10, 10))
 
       "current occupied tile is visible range" in {
@@ -112,18 +115,5 @@ object VisionInstancesTest {
     ).toMap
 
   val blankArea: Area = Area(blankMap)
-
-  val player = Player("test", Health(10))
-  implicit val basicPlayerSight: Sight[Player] = new Sight[Player] {
-    override def visionCost(b: Player, place: Place): Double = place.tile match {
-      case Ground => 1.0
-      case Rough => 1.5
-      case Water => 1.0
-      case Wall => 99
-      case Stairs(_) => 1d
-      case Exit(_) => 1d
-    }
-
-    override val range: Double = 5
-  }
+  val player = Enemy.apply(Zombie)
 }

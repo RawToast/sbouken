@@ -1,11 +1,11 @@
 package bouken.world
 
-import scala.io.Source
-import scala.util.Try
-
 import bouken.domain.Level
 import io.circe.parser.parse
 import io.circe.{Decoder, Json}
+
+import scala.io.Source
+import scala.util.Try
 
 trait LevelParser[T[_]] {
   def parseLevel(directory: String, fileName: String): T[Level]

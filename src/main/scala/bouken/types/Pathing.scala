@@ -1,10 +1,7 @@
-package bouken
+package bouken.types
 
+import bouken.domain.{Place, Position, Route}
 import simulacrum._
-
-import bouken.domain.{Place, Route}
-
-case class Position(x: Int, y: Int)
 
 @typeclass trait Pathing[A] {
   def canNavigate(a: A, from: Position, to: Position, limit: Int): Boolean
@@ -25,12 +22,13 @@ trait LocatePosition[A, B] {
 }
 
 object LocatePosition {
-  object ops {
-    implicit class LocatePositionSyntaxOps[A](val a: A) extends AnyVal {
+  trait Ops {
+    implicit class LocatePositionSyntaxOps[A](val a: A) {
       def find[B](position: Position)(implicit loc: LocatePosition[A, B]): B =
         loc.find(a, position)
     }
   }
+  object ops extends Ops
 }
 
 @typeclass trait MoveCosts[B] {

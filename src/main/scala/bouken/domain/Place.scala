@@ -4,8 +4,11 @@ case class Place(visible: Boolean, tile: Tile, state: Occupier, tileEffect: Tile
 
 sealed trait Occupier
 case object Empty extends Occupier
-case class Player(name: String, health: Health) extends Occupier
+
+case class Player(name: String, health: Health, meta: PlayerLevelMeta) extends Occupier
 case class Enemy(kind: EnemyKind, health: Health) extends Occupier
+
+case class PlayerLevelMeta(position: Position, timeDelta: TimeDelta)
 
 object Enemy {
   def apply(kind: EnemyKind): Enemy =
