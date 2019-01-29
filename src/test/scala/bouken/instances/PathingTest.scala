@@ -1,15 +1,14 @@
-package bouken
+package bouken.instances
 
 import bouken.domain._
 import bouken.types.MoveCosts
 import org.scalatest.{FreeSpec, Matchers}
 
 class PathingTest extends FreeSpec with Matchers {
-
+  import bouken.syntax.pathing._
   import PathingTest._
 
   "Pathing" - {
-    import bouken.types.Pathing.ops._
     "isOutOfBounds" - {
       "is true when given a negative X Position" in {
         blankArea.isOutOfBounds(Position(-1, 0)) shouldBe true
@@ -120,7 +119,6 @@ class PathingTest extends FreeSpec with Matchers {
   }
 
   "Find Position" - {
-      import bouken.types.LocatePosition.ops._
       "Returns a place if one exists" in {
         val result = blankArea.find(Position(0, 0))
 
@@ -135,7 +133,6 @@ class PathingTest extends FreeSpec with Matchers {
   }
 
   "Suggest Route" - {
-    import bouken.types.Navigation.ops._
     "When a single route exists" - {
       val start = Position(0, 0)
       val finish = Position(0, 2)

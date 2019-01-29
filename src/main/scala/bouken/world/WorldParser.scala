@@ -15,9 +15,6 @@ case class OptionWorldParser(areaParser: LevelParser[Option]) extends WorldParse
   override def parseWorld(directory: String): Option[World] = {
     val parser = areaParser.parseLevel(directory, _)
     val levels = readFileNames(directory)
-      .map(n => {
-        println(n); n
-      })
       .map(parser)
       .flatten
       .foldLeft(Map.empty[Level.Name, Level]) {

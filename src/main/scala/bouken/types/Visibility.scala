@@ -14,8 +14,10 @@ trait Sight[B] {
 }
 
 object Sight {
-  object ops {
-    implicit class Syntax[A](val a: A) extends AnyVal {
+  object ops extends Ops
+
+  trait Ops {
+    implicit class Syntax[A](val a: A) {
       def range(implicit S: Sight[A]): Double =
         S.range(a)
 

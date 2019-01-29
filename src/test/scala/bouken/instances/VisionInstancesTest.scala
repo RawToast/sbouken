@@ -7,7 +7,7 @@ import org.scalatest.{FreeSpec, Matchers}
 class VisionInstancesTest extends FreeSpec with Matchers {
 
   import VisionInstancesTest._
-  import bouken.types.Visibility.ops._
+  import bouken.syntax.vision._
   import bouken.instances.VisionInstances._
 
   "Visibility" - {

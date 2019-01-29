@@ -22,12 +22,13 @@ trait LocatePosition[A, B] {
 }
 
 object LocatePosition {
-  object ops {
-    implicit class LocatePositionSyntaxOps[A](val a: A) extends AnyVal {
+  trait Ops {
+    implicit class LocatePositionSyntaxOps[A](val a: A) {
       def find[B](position: Position)(implicit loc: LocatePosition[A, B]): B =
         loc.find(a, position)
     }
   }
+  object ops extends Ops
 }
 
 @typeclass trait MoveCosts[B] {
