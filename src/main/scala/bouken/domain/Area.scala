@@ -4,6 +4,7 @@ import bouken._
 
 case class Area(value: Map[Position, Place]) extends AnyVal
 case class Route(value: List[Position]) extends AnyVal
+case class Position(x: Int, y: Int)
 
 object Area {
   implicit val LocatePosition: LocatePosition[Area, Option[Place]] = AreaLogic.AreaLocatePosition

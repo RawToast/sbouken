@@ -1,10 +1,10 @@
 package bouken.instances
 
-import scala.annotation.tailrec
-
-import bouken.domain.{Area, Place}
-import bouken.{Position, Sight, Visibility}
 import bouken.Sight.ops._
+import bouken.domain.{Area, Place, Position}
+import bouken.{Sight, Visibility}
+
+import scala.annotation.tailrec
 
 object VisionInstances {
 
@@ -24,13 +24,13 @@ object VisionInstances {
     private def makeLines[S : Sight](s: S, area: Area, originalPosition: Position): Set[Position] = {
       val sight: Sight[S] = implicitly[Sight[S]]
 
-      val rng = List.range(-sight.range.toInt, sight.range.toInt + 1).filter(_ != 0)
+      val rng = List.range(-sight.range(s).toInt, sight.range(s).toInt + 1).filter(_ != 0)
 
       rangeToPositions(rng)
         .flatMap(makeLine(s, area, originalPosition, _))
         .toSet
-        .filter(pos => (pos.x <= originalPosition.x + sight.range.toInt) && (pos.y <= originalPosition.y + sight.range.toInt))
-        .filter(pos => (pos.x >= originalPosition.x - sight.range.toInt) && (pos.y >= originalPosition.y - sight.range.toInt))
+        .filter(pos => (pos.x <= originalPosition.x + sight.range(s).toInt) && (pos.y <= originalPosition.y + sight.range(s).toInt))
+        .filter(pos => (pos.x >= originalPosition.x - sight.range(s).toInt) && (pos.y >= originalPosition.y - sight.range(s).toInt))
     }
 
     //makeLine(limit + 2, area, (x, y), dxdy))

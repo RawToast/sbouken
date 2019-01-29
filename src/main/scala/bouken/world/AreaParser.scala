@@ -1,7 +1,6 @@
 package bouken.world
 
-import bouken.Position
-import bouken.domain.{Area, Place}
+import bouken.domain.{Area, Place, Position}
 
 trait AreaParser[T[_]] {
   def parse(value: String): T[Area]

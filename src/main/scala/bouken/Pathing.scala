@@ -1,10 +1,7 @@
 package bouken
 
+import bouken.domain.{Place, Position, Route}
 import simulacrum._
-
-import bouken.domain.{Place, Route}
-
-case class Position(x: Int, y: Int)
 
 @typeclass trait Pathing[A] {
   def canNavigate(a: A, from: Position, to: Position, limit: Int): Boolean

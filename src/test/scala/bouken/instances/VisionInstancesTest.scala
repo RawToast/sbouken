@@ -1,7 +1,7 @@
 package bouken.instances
 
+import bouken.Sight
 import bouken.domain._
-import bouken.{Position, Sight}
 import org.scalatest.{FreeSpec, Matchers}
 
 class VisionInstancesTest extends FreeSpec with Matchers {
@@ -113,7 +113,8 @@ object VisionInstancesTest {
 
   val blankArea: Area = Area(blankMap)
 
-  val player = Player("test", Health(10))
+  val meta = PlayerLevelMeta(Position(0,0), TimeDelta(0))
+  val player = Player("test", Health(10), meta)
   implicit val basicPlayerSight: Sight[Player] = new Sight[Player] {
     override def visionCost(b: Player, place: Place): Double = place.tile match {
       case Ground => 1.0
@@ -124,6 +125,6 @@ object VisionInstancesTest {
       case Exit(_) => 1d
     }
 
-    override val range: Double = 5
+    override def range(b: Player): Double = 5
   }
 }

@@ -1,6 +1,5 @@
 package bouken.world
 
-import bouken.Position
 import bouken.domain._
 import org.scalatest.{FreeSpec, Matchers}
 
