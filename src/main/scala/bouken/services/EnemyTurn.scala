@@ -20,7 +20,7 @@ abstract class EnemyTurn[F[_]: Monad] {
 
   def findBestMove(enemy: Enemy, from: Position, to: Position)(
     LevelAsk: ApplicativeAsk[F, Level]
-  ): F[Position
+  ): F[Position]
 
   def move(enemy: Enemy, position: Position)(
     implicit
