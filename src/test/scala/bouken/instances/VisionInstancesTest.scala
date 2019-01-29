@@ -1,13 +1,13 @@
 package bouken.instances
 
-import bouken.Sight
+import bouken.types.Sight
 import bouken.domain._
 import org.scalatest.{FreeSpec, Matchers}
 
 class VisionInstancesTest extends FreeSpec with Matchers {
 
   import VisionInstancesTest._
-  import bouken.Visibility.ops._
+  import bouken.types.Visibility.ops._
   import bouken.instances.VisionInstances._
 
   "Visibility" - {

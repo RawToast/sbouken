@@ -1,8 +1,8 @@
 package bouken.instances
 
-import bouken.Sight.ops._
+import bouken.types.Sight.ops._
 import bouken.domain.{Area, Place, Position}
-import bouken.{Sight, Visibility}
+import bouken.types.{Sight, Visibility}
 
 import scala.annotation.tailrec
 

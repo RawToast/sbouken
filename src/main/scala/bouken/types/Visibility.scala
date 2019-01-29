@@ -1,4 +1,4 @@
-package bouken
+package bouken.types
 
 import bouken.domain.{Place, Position}
 import simulacrum._

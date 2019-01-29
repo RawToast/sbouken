@@ -1,7 +1,7 @@
 package bouken.instances
 
-import bouken.Sight
 import bouken.domain._
+import bouken.types.Sight
 
 object SightInstances {
   implicit val EnemySight: Sight[Enemy] = new Sight[Enemy] {

@@ -1,6 +1,6 @@
 package bouken.domain
 
-import bouken._
+import bouken.types.{LocatePosition, MoveCosts, Navigation, Pathing}
 
 case class Area(value: Map[Position, Place]) extends AnyVal
 case class Route(value: List[Position]) extends AnyVal

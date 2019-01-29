@@ -7,9 +7,9 @@ import cats.implicits._
 import cats.mtl.{ApplicativeAsk, FunctorTell, MonadState}
 
 abstract class EnemyTurn[F[_]: Monad] {
-  import bouken.Pathing.ops._
-  import bouken.Sight.ops._
-  import bouken.Visibility.ops._
+  import bouken.types.Pathing.ops._
+  import bouken.types.Sight.ops._
+  import bouken.types.Visibility.ops._
   import bouken.instances.SightInstances.EnemySight
   import bouken.instances.VisionInstances.AreaVision
 
