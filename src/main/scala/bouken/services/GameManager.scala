@@ -4,30 +4,22 @@ import java.util.UUID
 
 import bouken.domain._
 import bouken.world.WorldParser
-import cats.{Monad, MonadError}
+import cats.Monad
 
-trait GameManagerAlgebra[F[_]] {
-  def createGame(playerName: String, directory: String)(
-    implicit
-    E: MonadError[F, GameManagementError]
-  ): F[Game]
+abstract class GameManagerAlgebra[F[_]: GameManagerMonadError] {
+  def createGame(playerName: String, directory: String): F[Game]
 
-  def saveGame(game: Game)(
-    implicit
-    E: MonadError[F, GameManagementError]
-  ): F[Unit]
+  def saveGame(game: Game): F[Unit]
 
-  def loadGame(uuid: UUID)(
-    implicit
-    E: MonadError[F, GameManagementError]
-  ): F[Option[Game]]
+  def loadGame(uuid: UUID): F[Option[Game]]
 }
 
-case class GameManager[F[_]](worldParser: WorldParser[Option]) extends GameManagerAlgebra[F] {
-  def createGame(playerName: String, directory: String)(
-    implicit
-    E: MonadError[F, GameManagementError]
-  ): F[Game] = {
+case class GameManager[F[_]: GameManagerMonadError](
+  worldParser: WorldParser[Option]) extends GameManagerAlgebra[F] {
+
+  val ErrorMonad: GameManagerMonadError[F] = implicitly
+
+  def createGame(playerName: String, directory: String): F[Game] = {
     worldParser.parseWorld(directory)
       .map{world =>
         Game(
@@ -36,19 +28,13 @@ case class GameManager[F[_]](worldParser: WorldParser[Option]) extends GameManag
           timeLines = TimeLineStore(Map.empty),
           world = world)
       } match {
-      case Some(value)  => E.pure(value)
-      case None         => E.raiseError(GameManagementError.FailedToCreateGame)
+      case Some(value)  => ErrorMonad.pure(value)
+      case None         => ErrorMonad.raiseError(GameManagementError.FailedToCreateGame)
     }
-
   }
 
-  def saveGame(game: Game)(
-    implicit
-    E: MonadError[F, GameManagementError]
-  ): F[Unit] = ???
+  def saveGame(game: Game): F[Unit] =
+    implicitly[Monad[F]].pure(())
 
-  def loadGame(uuid: UUID)(
-    implicit
-    E: MonadError[F, GameManagementError]
-  ): F[Option[Game]] = ???
+  def loadGame(uuid: UUID): F[Option[Game]] = ???
 }
