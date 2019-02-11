@@ -39,21 +39,14 @@ case class GameManager[F[_]: ManagementMonadError: Functor](
     ErrorMonad.fromOption(worldParser.parseWorld(directory), ManagementError.FailedToCreateGame)
 
     def getCurrentLevel(world: World): F[Level] =
-    ErrorMonad.fromOption(world.currentLevel, ManagementError.FailedToCreateGame)
-
-    def getPlayerPosition(level: Level): F[Position] =
-    ErrorMonad.fromOption(
-      level.area.value.find(p => p._2.state.isInstanceOf[Player]).map(_._1),
-      ManagementError.FailedToCreateGame
-    )
+    ErrorMonad.fromOption(world.currentLevel, ManagementError.InitialLevelDoesNotExist)
 
     for {
-      world    <- makeWorld(directory)
-      level    <- getCurrentLevel(world)
-      position <- getPlayerPosition(level)
+      world <- makeWorld(directory)
+      _     <- getCurrentLevel(world)
     } yield Game(
       uuid = uuid,
-      player = Player(playerName, Health(10), PlayerLevelMeta(position, TimeDelta(0d))),
+      player = Player(playerName, Health(10), PlayerLevelMeta(Position(1, 1), TimeDelta(0d))),
       timeLines = TimeLineStore(Map.empty),
       world = world
     )

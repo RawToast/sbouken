@@ -2,6 +2,8 @@ package bouken.services
 
 import java.util.UUID
 
+import bouken.domain.Game
+import bouken.services.ManagementError.FailedToCreateGame
 import bouken.world.{OptionAreaParser, OptionLevelParser, OptionPlaceParser, OptionWorldParser}
 import cats.implicits._
 import org.scalatest.{FreeSpec, Matchers}
@@ -20,7 +22,16 @@ class GameManagerTest extends FreeSpec with Matchers {
           gameManager.createGame("test", "world", testUUID)
 
         "when the world can be created creates a game" in {
-          successfulResult.isRight shouldBe true
+          successfulResult shouldBe a[Right[_, Game]]
+        }
+      }
+
+      "when the game directory is invalid" - {
+        val successfulResult =
+          gameManager.createGame("test", "abc", testUUID)
+
+        "fails to create a game" in {
+          successfulResult shouldBe Left(FailedToCreateGame)
         }
       }
     }
