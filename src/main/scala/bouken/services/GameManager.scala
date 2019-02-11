@@ -4,37 +4,62 @@ import java.util.UUID
 
 import bouken.domain._
 import bouken.world.WorldParser
-import cats.Monad
+import cats.{Functor, Monad, MonadError}
+import cats.implicits._
 
-abstract class GameManagerAlgebra[F[_]: GameManagerMonadError] {
-  def createGame(playerName: String, directory: String): F[Game]
+abstract class GameManagerAlgebra[F[_]: ManagementMonadError] {
+  def createGame(playerName: String, directory: String, uuid: UUID): F[Game]
 
   def saveGame(game: Game): F[Unit]
 
   def loadGame(uuid: UUID): F[Option[Game]]
 }
 
-case class GameManager[F[_]: GameManagerMonadError](
+case class GameManager[F[_]: ManagementMonadError: Functor](
   worldParser: WorldParser[Option]) extends GameManagerAlgebra[F] {
 
-  val ErrorMonad: GameManagerMonadError[F] = implicitly
-
-  def createGame(playerName: String, directory: String): F[Game] = {
-    worldParser.parseWorld(directory)
-      .map{world =>
-        Game(
-          uuid = UUID.randomUUID(), // No good
-          player = Player(playerName, Health(10), PlayerLevelMeta(???, ???)),
-          timeLines = TimeLineStore(Map.empty),
-          world = world)
-      } match {
-      case Some(value)  => ErrorMonad.pure(value)
-      case None         => ErrorMonad.raiseError(GameManagementError.FailedToCreateGame)
+  implicit class ErrOption[A](option: Option[A]) {
+    def raise(error: ManagementError)(implicit ME: MonadError[F, ManagementError]): F[A] = option match {
+      case Some(value) => ME.pure[A](value)
+      case None        => ME.raiseError[A](error)
     }
   }
 
+  implicit class MonadErrorEx[A[_], E](me: MonadError[A, E]) {
+    def fromOption[B](option: Option[B], error: E): A[B] =
+      me.fromEither(option.toRight(error))
+  }
+
+  val ErrorMonad: ManagementMonadError[F] = implicitly[ManagementMonadError[F]]
+  implicit val F: Monad[F] = implicitly
+
+  def createGame(playerName: String, directory: String, uuid: UUID): F[Game] = {
+    def makeWorld(directory: String): F[World] =
+    ErrorMonad.fromOption(worldParser.parseWorld(directory), ManagementError.FailedToCreateGame)
+
+    def getCurrentLevel(world: World): F[Level] =
+    ErrorMonad.fromOption(world.currentLevel, ManagementError.FailedToCreateGame)
+
+    def getPlayerPosition(level: Level): F[Position] =
+    ErrorMonad.fromOption(
+      level.area.value.find(p => p._2.state.isInstanceOf[Player]).map(_._1),
+      ManagementError.FailedToCreateGame
+    )
+
+    for {
+      world <- makeWorld(directory)
+      level <- getCurrentLevel(world)
+      position <- getPlayerPosition(level)
+    } yield Game(
+      uuid = uuid,
+      player = Player(playerName, Health(10), PlayerLevelMeta(position, TimeDelta(0d))),
+      timeLines = TimeLineStore(Map.empty),
+      world = world
+    )
+  }
+
   def saveGame(game: Game): F[Unit] =
-    implicitly[Monad[F]].pure(())
+    ???
 
   def loadGame(uuid: UUID): F[Option[Game]] = ???
 }

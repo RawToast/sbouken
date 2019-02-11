@@ -6,11 +6,11 @@ package object services {
 
   sealed trait GameError extends Throwable
 
-  sealed trait GameManagementError extends GameError
-  object GameManagementError {
-    case object FailedToCreateGame extends GameManagementError
-    case class System(error: Throwable) extends GameManagementError
+  sealed trait ManagementError extends GameError
+  object ManagementError {
+    case object FailedToCreateGame extends ManagementError
+    case class System(error: Throwable) extends ManagementError
   }
 
-  type GameManagerMonadError[F[_]] = MonadError[F, GameManagementError]
+  type ManagementMonadError[F[_]] = MonadError[F, ManagementError]
 }

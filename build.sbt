@@ -11,7 +11,7 @@ resolvers ++= Seq(
 )
 
 libraryDependencies ++= Seq(
-  "org.typelevel" %% "cats-core" % "1.4.0",
+  "org.typelevel" %% "cats-core" % "1.6.0",
   "org.typelevel" %% "cats-mtl-core" % "0.4.0",
   // circe
   "io.circe" %% "circe-core" % "0.10.0",
