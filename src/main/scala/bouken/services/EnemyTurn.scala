@@ -19,6 +19,7 @@ abstract class EnemyTurn[F[_]: Monad] {
   ): F[Boolean]
 
   def findBestMove(enemy: Enemy, from: Position, to: Position)(
+    implicit
     LevelAsk: ApplicativeAsk[F, Level]
   ): F[Position]
 

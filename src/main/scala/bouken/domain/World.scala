@@ -2,7 +2,10 @@ package bouken.domain
 
 import enumeratum._
 
-case class World(current: Level.Name, levels: Map[Level.Name, Level])
+case class World(current: Level.Name, levels: Map[Level.Name, Level]) {
+  def currentLevel: Option[Level] =
+    levels.get(current)
+}
 
 case class Level(area: Area, name: Level.Name, tileSet: Level.TileSet)
 

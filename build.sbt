@@ -11,7 +11,7 @@ resolvers ++= Seq(
 )
 
 libraryDependencies ++= Seq(
-  "org.typelevel" %% "cats-core" % "1.4.0",
+  "org.typelevel" %% "cats-core" % "1.6.0",
   "org.typelevel" %% "cats-mtl-core" % "0.4.0",
   // circe
   "io.circe" %% "circe-core" % "0.10.0",
@@ -39,5 +39,6 @@ scalacOptions ++=
 
 addCompilerPlugin("org.spire-math" %% "kind-projector" % "0.9.8")
 addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.1" cross CrossVersion.full)
+addCompilerPlugin("com.olegpy" %% "better-monadic-for" % "0.3.0-M4")
 
 addCommandAlias("validate", ";coverage;test;coverageReport")
