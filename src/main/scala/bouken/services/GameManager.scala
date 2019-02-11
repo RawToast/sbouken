@@ -5,7 +5,8 @@ import java.util.UUID
 import bouken.domain._
 import bouken.world.WorldParser
 import cats.{Functor, Monad, MonadError}
-import cats.implicits._
+import cats.syntax.functor._
+import cats.syntax.flatMap._
 
 abstract class GameManagerAlgebra[F[_]: ManagementMonadError] {
   def createGame(playerName: String, directory: String, uuid: UUID): F[Game]
@@ -47,8 +48,8 @@ case class GameManager[F[_]: ManagementMonadError: Functor](
     )
 
     for {
-      world <- makeWorld(directory)
-      level <- getCurrentLevel(world)
+      world    <- makeWorld(directory)
+      level    <- getCurrentLevel(world)
       position <- getPlayerPosition(level)
     } yield Game(
       uuid = uuid,
