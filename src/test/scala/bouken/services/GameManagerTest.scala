@@ -3,7 +3,7 @@ package bouken.services
 import java.util.UUID
 
 import bouken.domain.Game
-import bouken.services.ManagementError.FailedToCreateGame
+import bouken.services.ManagementError.{FailedToCreateGame, GameDoesNotExist}
 import bouken.world.{OptionAreaParser, OptionLevelParser, OptionPlaceParser, OptionWorldParser}
 import cats.implicits._
 import org.scalatest.{FreeSpec, Matchers}
@@ -13,8 +13,7 @@ class GameManagerTest extends FreeSpec with Matchers {
 
   "GameManager" - {
     "createGame" - {
-
-      val gameManager = GameManager(worldParser)
+      val gameManager = InMemoryGameManager(worldParser)
       val testUUID = UUID.randomUUID()
 
       "when able to construct a world" - {
@@ -32,6 +31,37 @@ class GameManagerTest extends FreeSpec with Matchers {
 
         "fails to create a game" in {
           successfulResult shouldBe Left(FailedToCreateGame)
+        }
+      }
+    }
+
+    "loadGame" - {
+      val testUUID = UUID.randomUUID()
+
+      "when the game exists" - {
+        val gameManager = InMemoryGameManager(worldParser)
+
+        val result = for {
+          g    <- gameManager.createGame("test", "world", testUUID)
+          _    <- gameManager.saveGame(g)
+          game <- gameManager.loadGame(testUUID)
+        } yield game
+
+        "returns successfully" in {
+          result shouldBe a[Right[_, Game]]
+        }
+
+        "returns the expected game" in {
+          result.map(_.uuid) shouldBe Right(testUUID)
+        }
+      }
+
+      "when the game does not exist" - {
+        val gameManager = InMemoryGameManager(worldParser)
+        val result = gameManager.loadGame(testUUID)
+
+        "fails to load the game" in {
+          result shouldBe Left(GameDoesNotExist)
         }
       }
     }
