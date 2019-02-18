@@ -13,3 +13,4 @@ This project is currently built with the following awesome stack:
 * [Cats](https://github.com/typelevel/cats)
 * [Cats-MTL](https://github.com/typelevel/cats-mtl)
 * [Meow-MTL](https://github.com/oleg-py/meow-mtl)
+* [Http4s](https://github.com/http4s/http4s)
