@@ -3,32 +3,37 @@ package bouken.server
 import io.circe._
 import io.circe.generic.semiauto.deriveEncoder
 import io.circe.generic.extras.semiauto.deriveUnwrappedEncoder
-import bouken.domain.{Health, Level, Position, TimeDelta}
-import bouken.server.Protocol.GameView.CurrentLevel.PositionedTile
+import bouken.domain._
+import cats.effect.IO
+import org.http4s.EntityEncoder
 
 object Protocol {
 
-  case class GameView(player: GameView.Player, currentLevel: GameView.CurrentLevel)
+  case class GameViewResponse(player: GameViewResponse.Player, currentLevel: GameViewResponse.CurrentLevel)
 
-  object GameView {
+  object GameViewResponse {
+    def apply(domainGameView: GameView): GameViewResponse = new GameViewResponse(???, ???)
+
     case class Player(name: String, health: Health, timeDelta: TimeDelta)
     object Player {
       implicit private val healthEncoder: Encoder[Health] = deriveUnwrappedEncoder[Health]
       implicit private val deltaEncoder: Encoder[TimeDelta] = deriveUnwrappedEncoder[TimeDelta]
-      implicit val encoder: Encoder[GameView.Player] = deriveEncoder[GameView.Player]
+      implicit val encoder: Encoder[GameViewResponse.Player] = deriveEncoder[GameViewResponse.Player]
     }
 
-    case class CurrentLevel(name: Level.Name, area: Set[PositionedTile], tileSet: Level.TileSet)
+    case class CurrentLevel(name: Level.Name, area: Set[CurrentLevel.Tile], tileSet: Level.TileSet)
     object CurrentLevel {
-      case class PositionedTile(position: Position, tile: Tile)
-      case class Tile(value: String, description: Option[String])
+
+      case class Tile(position: Position, value: String, description: Option[String])
+      object Tile {
+        implicit private val positionEncoder: Encoder[Position] = deriveEncoder[Position]
+        implicit val tileEncoder: Encoder[Tile] = deriveEncoder[Tile]
+      }
 
       implicit private val nameEncoder: Encoder[Level.Name] = deriveUnwrappedEncoder[Level.Name]
-      implicit private val positionEncoder: Encoder[Position] = deriveEncoder[Position]
-      implicit private val tileEncoder: Encoder[Tile] = deriveEncoder[Tile]
-      implicit private val positionedTileEncoder: Encoder[PositionedTile] = deriveEncoder[PositionedTile]
-
       implicit val encoder: Encoder[CurrentLevel] = deriveEncoder[CurrentLevel]
     }
+
+    implicit val jsonEncoder: Encoder[GameViewResponse] = deriveEncoder[GameViewResponse]
   }
 }
