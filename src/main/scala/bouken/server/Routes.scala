@@ -1,6 +1,5 @@
 package bouken.server
 
-import bouken.domain._
 import bouken.server.Protocol.GameViewResponse
 import bouken.services.GameManager
 import cats.effect._
@@ -14,16 +13,21 @@ case class Routes(gameManager: GameManager[IO]) {
 
   val gameService: HttpRoutes[IO] = HttpRoutes.of[IO] {
     case GET -> Root / id =>
-      val response = gameManager.loadGame(java.util.UUID.fromString(id))
-        .map(g => GameView(g.uuid, g.player, ???, ???))
+      gameManager
+        .loadGame(java.util.UUID.fromString(id))
         .map(GameViewResponse.apply)
+        .flatMap {
+          case Some(value) => Ok(value)
+          case None        => InternalServerError()
+        }
 
-      Ok(response)
     case POST -> Root / playerName =>
-      val response: IO[GameViewResponse] = gameManager.createGame(playerName, "world", java.util.UUID.randomUUID())
-        .map(g => GameView(g.uuid, g.player, ???, ???))
+      gameManager
+        .createGame(playerName, "world", java.util.UUID.randomUUID())
         .map(GameViewResponse.apply)
-
-      Created(response)
+        .flatMap {
+          case Some(value) => Created(value)
+          case None        => InternalServerError()
+        }
   }
 }

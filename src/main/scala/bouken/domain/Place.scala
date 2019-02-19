@@ -1,28 +1,20 @@
 package bouken.domain
 
+import cats.Show
+import cats.syntax.show._
+
 case class Place(visible: Boolean, tile: Tile, state: Occupier, tileEffect: TileEffect)
+object Place {
 
-sealed trait Occupier
-case object Empty extends Occupier
-
-case class Player(name: String, health: Health, meta: PlayerLevelMeta) extends Occupier
-case class Enemy(kind: EnemyKind, health: Health) extends Occupier
-
-case class PlayerLevelMeta(position: Position, timeDelta: TimeDelta)
-
-object Enemy {
-  def apply(kind: EnemyKind): Enemy =
-    kind match {
-      case Zombie   => new Enemy(Zombie, Health(5))
-      case Gnoll    => new Enemy(Gnoll, Health(3))
-      case Minotaur => new Enemy(Minotaur, Health(10))
-    }
+  implicit val show: Show[Place] = Show.show { place =>
+    if (place.visible) {
+      place.state match {
+        case Empty => place.tile.show
+        case Player(_, _, _)     => "O"
+        case Enemy(kind, _)      => kind.show
+      }
+    } else ""
+  }
 }
 
-case class Health(value: Int) extends AnyVal
-
-sealed trait EnemyKind
-
-case object Zombie extends EnemyKind
-case object Gnoll extends EnemyKind
-case object Minotaur extends EnemyKind
+case class PlayerLevelMeta(position: Position, timeDelta: TimeDelta)
