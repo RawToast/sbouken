@@ -5,7 +5,7 @@ version := "0.1"
 
 scalaVersion := "2.12.8"
 
-val circeVersion = "0.10.0"
+val circeVersion = "0.11.1"
 val http4sVersion = "0.20.0-M5"
 
 
@@ -35,6 +35,7 @@ libraryDependencies ++= Seq(
   "com.github.mpilquist" %% "simulacrum" % "0.14.0",
   "org.typelevel" %% "mouse" % "0.20",
   // test
+  "io.circe" %% "circe-literal" % circeVersion  % "test",
   "org.scalatest" %% "scalatest" % "3.0.5" % "test"
 )
 
