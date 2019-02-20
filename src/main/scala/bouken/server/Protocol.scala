@@ -4,6 +4,7 @@ import io.circe._
 import io.circe.generic.semiauto.deriveEncoder
 import io.circe.generic.extras.semiauto.deriveUnwrappedEncoder
 import bouken.domain._
+import enumeratum._
 
 object Protocol {
 
@@ -37,11 +38,30 @@ object Protocol {
       implicit val encoder: Encoder[GameViewResponse.Player] = deriveEncoder[GameViewResponse.Player]
     }
 
-    case class CurrentLevel(name: Level.Name, area: Set[CurrentLevel.Tile], tileSet: Level.TileSet)
+    case class CurrentLevel(name: Level.Name, area: Set[CurrentLevel.Tile], tileSet: Option[Level.TileSet])
     object CurrentLevel {
 
       case class Tile(position: Position, value: String, description: Option[String])
       object Tile {
+        case class Meta(tile: Tile, enemyKind: Option[EnemyKind], tileEffect: Option[TileEffect])
+
+        sealed trait TileEffect extends EnumEntry
+        case object TileEffect extends Enum[Occupier] with CirceEnum[Occupier] {
+          def apply(eff: bouken.domain.TileEffect): Option[TileEffect] = eff match {
+            case NoEffect   => None
+            case Trap(_)    => Some(Trap)
+            case Snare(_)   => Some(Snare)
+            case Heal(_)    => Some(Heal)
+            case Gold(_)    => Some(Gold)
+          }
+          val values = findValues
+
+          case object Trap extends TileEffect
+          case object Snare extends TileEffect
+          case object Heal extends TileEffect
+          case object Gold extends TileEffect
+        }
+
         implicit private val positionEncoder: Encoder[Position] = deriveEncoder[Position]
         implicit val tileEncoder: Encoder[Tile] = deriveEncoder[Tile]
       }
@@ -52,4 +72,5 @@ object Protocol {
 
     implicit val jsonEncoder: Encoder[GameViewResponse] = deriveEncoder[GameViewResponse]
   }
+
 }
