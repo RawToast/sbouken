@@ -26,7 +26,7 @@ object Protocol {
 
     private def areaToTiles(area: Map[Position, Place]): Set[CurrentLevel.Tile] =
       area
-        .map{ case (position, place) => Converters.areaToTiles(position, place) }
+        .map{ case (position, place) => Converters.positionToTile(position, place) }
         .toSet
 
 

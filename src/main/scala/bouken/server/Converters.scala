@@ -5,7 +5,7 @@ import bouken.server.Protocol.GameViewResponse.CurrentLevel
 import cats.syntax.show._
 
 object Converters {
-  def areaToTiles(position: Position, place: Place): CurrentLevel.Tile = {
+  def positionToTile(position: Position, place: Place): CurrentLevel.Tile = {
     CurrentLevel.Tile(position, place.show, None)
   }
 }
