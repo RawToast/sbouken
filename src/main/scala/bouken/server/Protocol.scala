@@ -43,7 +43,10 @@ object Protocol {
 
       case class Tile(position: Position, value: String, description: Option[String])
       object Tile {
-        case class Meta(tile: Tile, enemyKind: Option[EnemyKind], tileEffect: Option[TileEffect])
+        case class Meta(tile: TileType, player: Option[Player], enemyKind: Option[EnemyKind], tileEffect: Option[TileEffect])
+        object Meta {
+          def apply(place: Place): Meta = Meta(bouken.domain.Ground, None, None, None)
+        }
 
         sealed trait TileEffect extends EnumEntry
         case object TileEffect extends Enum[TileEffect] with CirceEnum[TileEffect] {

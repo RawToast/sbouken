@@ -45,7 +45,7 @@ object OptionPlaceParser extends PlaceParser[Option] {
     )
   }
 
-  private def parseTile(string: String): Option[Tile] =
+  private def parseTile(string: String): Option[TileType] =
     string match {
       case "." => Some(Ground)
       case ":" => Some(Rough)
@@ -57,7 +57,7 @@ object OptionPlaceParser extends PlaceParser[Option] {
     }
 
   private def makeTile(
-    tile: Tile = Ground,
+    tile: TileType = Ground,
     visible: Boolean = false,
     state: Occupier = Empty,
     tileEffect: TileEffect = NoEffect

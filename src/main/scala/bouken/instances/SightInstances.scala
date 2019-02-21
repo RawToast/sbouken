@@ -19,7 +19,7 @@ object SightInstances {
         case Zombie => 5d
       }
 
-    private def defaultSight(tile: Tile) = tile match {
+    private def defaultSight(tile: TileType) = tile match {
       case Ground => 1.0
       case Rough => 1.5
       case Water => 1.0
@@ -28,7 +28,7 @@ object SightInstances {
       case Exit(_) => 1d
     }
 
-    private def tallSight(tile: Tile) = tile match {
+    private def tallSight(tile: TileType) = tile match {
       case Ground => 1.0
       case Rough => 1.0
       case Water => 1.0
