@@ -115,5 +115,5 @@ object VisionInstancesTest {
     ).toMap
 
   val blankArea: Area = Area(blankMap)
-  val player = Enemy.apply(Zombie)
+  val player = Enemy.apply(EnemyKind.Zombie)
 }

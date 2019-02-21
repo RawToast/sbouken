@@ -1,8 +1,9 @@
 package bouken.world
 
 import bouken.domain._
-
 import scala.util.Try
+
+import bouken.domain.EnemyKind._
 
 trait PlaceParser[T[_]] {
   def parse(value: String): Option[Place]

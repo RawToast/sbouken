@@ -5,7 +5,7 @@ import enumeratum._
 
 sealed trait EnemyKind extends EnumEntry
 
-case object EnemyKind extends Enum[Occupier] with CirceEnum[Occupier] {
+case object EnemyKind extends Enum[EnemyKind] with CirceEnum[EnemyKind] {
   val values = findValues
 
   case object Zombie extends EnemyKind

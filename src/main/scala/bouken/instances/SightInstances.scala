@@ -1,6 +1,7 @@
 package bouken.instances
 
 import bouken.domain._
+import bouken.domain.EnemyKind._
 import bouken.types.Sight
 
 object SightInstances {

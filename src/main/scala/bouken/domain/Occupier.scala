@@ -1,5 +1,7 @@
 package bouken.domain
 
+import bouken.domain.EnemyKind._
+
 sealed trait Occupier
 case object Empty extends Occupier
 

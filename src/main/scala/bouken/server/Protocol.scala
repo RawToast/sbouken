@@ -18,7 +18,7 @@ object Protocol {
         level <- game.world.currentLevel
         area = level.area
         tiles = areaToTiles(area.value)
-        currentLevel = CurrentLevel(game.world.current, tiles, level.tileSet)
+        currentLevel = CurrentLevel(game.world.current, tiles, Some(level.tileSet))
       } yield GameViewResponse(
         player,
         currentLevel
@@ -46,13 +46,13 @@ object Protocol {
         case class Meta(tile: Tile, enemyKind: Option[EnemyKind], tileEffect: Option[TileEffect])
 
         sealed trait TileEffect extends EnumEntry
-        case object TileEffect extends Enum[Occupier] with CirceEnum[Occupier] {
+        case object TileEffect extends Enum[TileEffect] with CirceEnum[TileEffect] {
           def apply(eff: bouken.domain.TileEffect): Option[TileEffect] = eff match {
-            case NoEffect   => None
-            case Trap(_)    => Some(Trap)
-            case Snare(_)   => Some(Snare)
-            case Heal(_)    => Some(Heal)
-            case Gold(_)    => Some(Gold)
+            case bouken.domain.NoEffect   => None
+            case bouken.domain.Trap(_)    => Some(Trap)
+            case bouken.domain.Snare(_)   => Some(Snare)
+            case bouken.domain.Heal(_)    => Some(Heal)
+            case bouken.domain.Gold(_)    => Some(Gold)
           }
           val values = findValues
 

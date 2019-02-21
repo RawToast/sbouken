@@ -3,6 +3,8 @@ package bouken.domain
 import cats.syntax.show._
 import org.scalatest.{FreeSpec, Matchers}
 
+import bouken.domain.EnemyKind._
+
 class EnemyKindTest extends FreeSpec with Matchers {
 
   "EnemyKind" - {
