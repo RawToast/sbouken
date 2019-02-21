@@ -4,6 +4,7 @@ import io.circe._
 import io.circe.generic.semiauto.deriveEncoder
 import io.circe.generic.extras.semiauto.deriveUnwrappedEncoder
 import bouken.domain._
+import bouken.server.Protocol.GameViewResponse.CurrentLevel.Tile.TileEffect.findValues
 import enumeratum._
 
 object Protocol {
@@ -43,9 +44,18 @@ object Protocol {
 
       case class Tile(position: Position, value: String, description: Option[String])
       object Tile {
-        case class Meta(tile: TileType, player: Option[Player], enemyKind: Option[EnemyKind], tileEffect: Option[TileEffect])
+        case class Meta(tile: TileType, visbility: Meta.Visbility, player: Option[Player], enemyKind: Option[EnemyKind], tileEffect: Option[TileEffect])
         object Meta {
-          def apply(place: Place): Meta = Meta(bouken.domain.Ground, None, None, None)
+          def apply(place: Place): Meta = Meta(bouken.domain.Ground, Visbility.Visibile(5), None, None, None)
+
+          sealed trait Visbility extends EnumEntry
+
+          case object Visbility extends Enum[Visbility] with CirceEnum[Visbility] {
+            val values = findValues
+
+            case class Visibile(brightness: Int) extends Visbility
+            case object Fow extends Visbility
+          }
         }
 
         sealed trait TileEffect extends EnumEntry

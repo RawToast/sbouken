@@ -20,6 +20,7 @@ object SightInstances {
       }
 
     private def defaultSight(tile: TileType) = tile match {
+      case Blank => 99d
       case Ground => 1.0
       case Rough => 1.5
       case Water => 1.0
@@ -29,6 +30,7 @@ object SightInstances {
     }
 
     private def tallSight(tile: TileType) = tile match {
+      case Blank => 99d
       case Ground => 1.0
       case Rough => 1.0
       case Water => 1.0
