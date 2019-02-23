@@ -8,7 +8,6 @@ scalaVersion := "2.12.8"
 val circeVersion = "0.11.1"
 val http4sVersion = "0.20.0-M5"
 
-
 resolvers ++= Seq(
   Resolver.sonatypeRepo("releases"),
   Resolver.sonatypeRepo("snapshots")
