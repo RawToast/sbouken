@@ -1,6 +1,7 @@
 package bouken.server
 
 import bouken.domain._
+import bouken.server.Protocol.GameViewResponse.CurrentLevel.Tile
 import org.scalatest.{FreeSpec, Matchers}
 
 class ConvertersTest extends FreeSpec with Matchers {
@@ -26,7 +27,13 @@ class ConvertersTest extends FreeSpec with Matchers {
       }
 
       "sets a valid ASCII value for the tile" - {
-        result.meta shouldBe "."
+        result.meta shouldBe Tile.Meta(
+          tile = Tile.TileKind.Ground,
+          visibility = Tile.Meta.Visibility.Visibile(7),
+          player = None,
+          enemyKind = None,
+          tileEffect = None
+        )
       }
     }
   }

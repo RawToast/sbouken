@@ -51,7 +51,7 @@ object Protocol {
           tileEffect: Option[TileEffect]
         )
         object Meta {
-          def apply(place: Place): Meta = Meta(TileKind.Ground, Visibility.Visibile(5), None, None, None)
+          def apply(place: Place): Meta = Meta(TileKind.Ground, Visibility.Visibile(7), None, None, None)
 
           sealed trait Visibility extends EnumEntry
 
