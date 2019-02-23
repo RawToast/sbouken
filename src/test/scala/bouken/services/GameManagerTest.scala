@@ -5,6 +5,7 @@ import java.util.UUID
 import bouken.domain.Game
 import bouken.services.ManagementError.{FailedToCreateGame, GameDoesNotExist}
 import bouken.world.{OptionAreaParser, OptionLevelParser, OptionPlaceParser, OptionWorldParser}
+import cats.effect.IO
 import cats.implicits._
 import org.scalatest.{FreeSpec, Matchers}
 
@@ -62,6 +63,32 @@ class GameManagerTest extends FreeSpec with Matchers {
 
         "fails to load the game" in {
           result shouldBe Left(GameDoesNotExist)
+        }
+      }
+    }
+  }
+
+  "IO GameManager" - {
+    "createGame" - {
+      import com.olegpy.meow.hierarchy._
+      val gameManager = InMemoryGameManager[IO](worldParser)
+      val testUUID = UUID.randomUUID()
+
+      "when able to construct a world" - {
+        val successfulResult: Game =
+          gameManager.createGame("test", "world", testUUID).unsafeRunSync()
+
+        "when the world can be created creates a game" in {
+          successfulResult shouldBe a[Game]
+        }
+      }
+
+      "when the game directory is invalid" - {
+        val successfulResult =
+          gameManager.createGame("test", "abc", testUUID).attempt.unsafeRunSync()
+
+        "fails to create a game" in {
+          successfulResult shouldBe Left(FailedToCreateGame)
         }
       }
     }

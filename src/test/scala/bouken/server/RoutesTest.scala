@@ -1,11 +1,10 @@
 package bouken.server
 
-import bouken.services.{GameManager, InMemoryGameManager, ManagementError, ManagementMonadError}
+import bouken.services.InMemoryGameManager
 import bouken.world.{OptionAreaParser, OptionLevelParser, OptionPlaceParser, OptionWorldParser}
-import cats.MonadError
 import cats.effect.IO
+import io.circe.Json
 import org.scalatest.{FreeSpec, Matchers}
-import cats.implicits._
 import org.http4s._
 import org.http4s.implicits._
 
@@ -18,21 +17,25 @@ class RoutesTest extends FreeSpec with Matchers {
 
       "When a valid request is sent" - {
           lazy val request: Request[IO] = Request[IO](method = Method.POST, uri = Uri.uri("/test"))
-          lazy val responseIO: IO[Option[Response[IO]]] = routes.gameService.run(request).value
-          lazy val response: Option[Response[IO]] = responseIO.unsafeRunSync()
+          lazy val responseIO: IO[Response[IO]] = routes.gameService.orNotFound.run(request)
+          lazy val response: Response[IO] = responseIO.unsafeRunSync()
 
         "Responds with 201 Created" in {
-          response.map(_.status.code) shouldBe Some(201)
+          response.status.code shouldBe 201
+        }
+
+        "The response contains the correct player name" in {
+          implicit val decoder: EntityDecoder[IO, Json] = org.http4s.circe.jsonDecoder
+          val jsonResponse = response.as[Json].unsafeRunSync()
+          val name = jsonResponse.hcursor.downField("player").downField("name").as[String].toOption
+          name shouldBe Some("test")
         }
       }
     }
   }
 }
 object RoutesTest{
-  import cats.effect.implicits._
-  import com.olegpy.meow.prelude._
-
-  implicit val myError: ManagementMonadError[IO] = implicitly[MonadError[IO, ManagementError]]
+  import com.olegpy.meow.hierarchy._
 
   private val areaParser = OptionAreaParser(OptionPlaceParser)
   private val levelParser = OptionLevelParser(areaParser)
