@@ -21,7 +21,7 @@ case class InMemoryGameManager[F[_]: ManagementMonadError](
   worldParser: WorldParser[Option]) extends GameManager[F] {
   import bouken.services.ManagementError._
 
-  private val store = TrieMap.empty[UUID, Game]
+  private val store = new TrieMap[UUID, Game]
 
   val ErrorMonad: ManagementMonadError[F] = implicitly[ManagementMonadError[F]]
 
@@ -43,9 +43,12 @@ case class InMemoryGameManager[F[_]: ManagementMonadError](
     )
   }
 
-  def saveGame(game: Game): F[Unit] =
-    ErrorMonad.pure(store.update(game.uuid, game))
+  def saveGame(game: Game): F[Unit] = {
+    store.put(game.uuid, game)
+    ErrorMonad.unit
+  }
 
-  def loadGame(uuid: UUID): F[Game] =
+  def loadGame(uuid: UUID): F[Game] = {
     ErrorMonad.fromOption(store.get(uuid), GameDoesNotExist)
+  }
 }

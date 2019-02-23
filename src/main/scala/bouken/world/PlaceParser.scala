@@ -1,8 +1,9 @@
 package bouken.world
 
 import bouken.domain._
-
 import scala.util.Try
+
+import bouken.domain.EnemyKind._
 
 trait PlaceParser[T[_]] {
   def parse(value: String): Option[Place]
@@ -44,7 +45,7 @@ object OptionPlaceParser extends PlaceParser[Option] {
     )
   }
 
-  private def parseTile(string: String): Option[Tile] =
+  private def parseTile(string: String): Option[TileType] =
     string match {
       case "." => Some(Ground)
       case ":" => Some(Rough)
@@ -56,7 +57,7 @@ object OptionPlaceParser extends PlaceParser[Option] {
     }
 
   private def makeTile(
-    tile: Tile = Ground,
+    tile: TileType = Ground,
     visible: Boolean = false,
     state: Occupier = Empty,
     tileEffect: TileEffect = NoEffect

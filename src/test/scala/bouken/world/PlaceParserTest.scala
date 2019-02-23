@@ -1,6 +1,7 @@
 package bouken.world
 
 import bouken.domain._
+import bouken.domain.EnemyKind._
 import org.scalatest.{FreeSpec, Matchers}
 
 class PlaceParserTest extends FreeSpec with Matchers {
