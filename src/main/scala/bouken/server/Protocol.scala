@@ -3,7 +3,7 @@ package bouken.server
 import io.circe._
 import io.circe.generic.semiauto.deriveEncoder
 import io.circe.generic.extras.semiauto.deriveUnwrappedEncoder
-import bouken.domain._
+import bouken.domain.{Player => _, _}
 import enumeratum._
 
 object Protocol {
@@ -33,6 +33,11 @@ object Protocol {
 
     case class Player(name: String, health: Health, timeDelta: TimeDelta)
     object Player {
+      def fromPlace(place: bouken.domain.Place): Option[Player] = place.state match {
+        case p: bouken.domain.Player => Some(Player(p.name, p.health, p.meta.timeDelta))
+        case _ => None
+      }
+
       implicit private val healthEncoder: Encoder[Health] = deriveUnwrappedEncoder[Health]
       implicit private val deltaEncoder: Encoder[TimeDelta] = deriveUnwrappedEncoder[TimeDelta]
       implicit val encoder: Encoder[GameViewResponse.Player] = deriveEncoder[GameViewResponse.Player]
@@ -51,7 +56,13 @@ object Protocol {
           tileEffect: Option[TileEffect]
         )
         object Meta {
-          def apply(place: Place): Meta = Meta(TileKind.Ground, Visibility.Visibile(7), None, None, None)
+          def apply(place: Place): Meta = Meta(
+            TileKind.Ground,
+            Visibility.Visibile(7),
+            Player.fromPlace(place),
+            EnemyKind.fromPlace(place),
+            TileEffect(place.tileEffect)
+          )
 
           sealed trait Visibility extends EnumEntry
 

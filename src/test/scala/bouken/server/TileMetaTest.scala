@@ -9,6 +9,17 @@ class PlaceTest extends FreeSpec with Matchers {
   "TileMeta" - {
     "when creating an empty tile" - {
       val place = defaultPlace.copy(
+        state = Empty
+      )
+      val result = Tile.Meta(place)
+
+      "player should not be present" in {
+        result.player shouldBe None
+      }
+    }
+
+    "when creating a tile containing the Player" - {
+      val place = defaultPlace.copy(
         state = Player(
           "Dave",
           Health(5),
@@ -17,8 +28,8 @@ class PlaceTest extends FreeSpec with Matchers {
       )
       val result = Tile.Meta(place)
 
-      "player should not be present" in {
-        result.player shouldBe None
+      "player should be present" in {
+        result.player.isDefined shouldBe true
       }
     }
   }

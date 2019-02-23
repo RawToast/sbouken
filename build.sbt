@@ -34,6 +34,7 @@ libraryDependencies ++= Seq(
   //other
   "com.github.mpilquist" %% "simulacrum" % "0.14.0",
   "org.typelevel" %% "mouse" % "0.20",
+  "com.softwaremill.quicklens" %% "quicklens" % "1.4.11",
   // test
   "io.circe" %% "circe-literal" % circeVersion  % "test",
   "org.scalatest" %% "scalatest" % "3.0.5" % "test"
