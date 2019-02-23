@@ -218,7 +218,6 @@ object PathingTest {
   case class WallWalker(name: String)
   object WallWalker {
     implicit val moveCost: MoveCosts[WallWalker] = (b: WallWalker, place: Place) => place.tile match {
-      case Blank => 99d
       case Ground => 1d
       case Rough => 2d
       case Wall => 5d

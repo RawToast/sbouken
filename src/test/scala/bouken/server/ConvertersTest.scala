@@ -26,7 +26,7 @@ class ConvertersTest extends FreeSpec with Matchers {
       }
 
       "sets a valid ASCII value for the tile" - {
-        result.value shouldBe "."
+        result.meta shouldBe "."
       }
     }
   }

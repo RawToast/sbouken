@@ -4,7 +4,6 @@ import io.circe._
 import io.circe.generic.semiauto.deriveEncoder
 import io.circe.generic.extras.semiauto.deriveUnwrappedEncoder
 import bouken.domain._
-import bouken.server.Protocol.GameViewResponse.CurrentLevel.Tile.TileEffect.findValues
 import enumeratum._
 
 object Protocol {
@@ -42,20 +41,28 @@ object Protocol {
     case class CurrentLevel(name: Level.Name, area: Set[CurrentLevel.Tile], tileSet: Option[Level.TileSet])
     object CurrentLevel {
 
-      case class Tile(position: Position, value: String, description: Option[String])
+      case class Tile(position: Position, meta: Tile.Meta, description: Option[String])
       object Tile {
-        case class Meta(tile: TileType, visbility: Meta.Visbility, player: Option[Player], enemyKind: Option[EnemyKind], tileEffect: Option[TileEffect])
+        case class Meta(
+          tile: TileKind,
+          visibility: Meta.Visibility,
+          player: Option[Player],
+          enemyKind: Option[EnemyKind],
+          tileEffect: Option[TileEffect]
+        )
         object Meta {
-          def apply(place: Place): Meta = Meta(bouken.domain.Ground, Visbility.Visibile(5), None, None, None)
+          def apply(place: Place): Meta = Meta(TileKind.Ground, Visibility.Visibile(5), None, None, None)
 
-          sealed trait Visbility extends EnumEntry
+          sealed trait Visibility extends EnumEntry
 
-          case object Visbility extends Enum[Visbility] with CirceEnum[Visbility] {
+          case object Visibility extends Enum[Visibility] with CirceEnum[Visibility] {
             val values = findValues
 
-            case class Visibile(brightness: Int) extends Visbility
-            case object Fow extends Visbility
+            case class Visibile(brightness: Int) extends Visibility
+            case object Fow extends Visibility
           }
+
+          implicit val encoder = deriveEncoder[Meta]
         }
 
         sealed trait TileEffect extends EnumEntry
@@ -73,6 +80,27 @@ object Protocol {
           case object Snare extends TileEffect
           case object Heal extends TileEffect
           case object Gold extends TileEffect
+        }
+
+        sealed trait TileKind extends EnumEntry
+        case object TileKind extends Enum[TileKind] with CirceEnum[TileKind] {
+          def apply(eff: bouken.domain.TileType): TileKind = eff match {
+            case bouken.domain.Ground => Ground
+            case bouken.domain.Rough  => Rough
+            case bouken.domain.Water  => Water
+            case bouken.domain.Wall   => Wall
+            case bouken.domain.Stairs(_) => Stairs
+            case bouken.domain.Exit(_)   => Exit
+          }
+          val values = findValues
+
+          case object Blank extends TileKind
+          case object Ground extends TileKind
+          case object Rough extends TileKind
+          case object Water extends TileKind
+          case object Wall extends TileKind
+          case object Stairs extends TileKind
+          case object Exit extends TileKind
         }
 
         implicit private val positionEncoder: Encoder[Position] = deriveEncoder[Position]

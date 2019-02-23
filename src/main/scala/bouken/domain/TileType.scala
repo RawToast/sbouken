@@ -4,7 +4,6 @@ import cats.Show
 
 sealed trait TileType
 
-case object Blank extends TileType
 
 case object Ground extends TileType
 
@@ -24,7 +23,6 @@ case class To(id: Int, level: String)
 
 object TileType{
   implicit val show: Show[TileType] = Show.show {
-    case Blank      => " "
     case Ground      => "."
     case Rough       => ":"
     case Water       => ";"
