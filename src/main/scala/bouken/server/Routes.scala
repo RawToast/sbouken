@@ -22,9 +22,11 @@ case class Routes(gameManager: GameManager[IO]) {
         }
 
     case POST -> Root / playerName =>
-      gameManager
-        .createGame(playerName, "world", java.util.UUID.randomUUID())
-        .map(GameViewResponse.apply)
+      (for {
+        game <- gameManager.createGame(playerName, "world", java.util.UUID.randomUUID())
+        _    <- gameManager.saveGame(game)
+        maybeResponse  = GameViewResponse.apply(game)
+      } yield maybeResponse)
         .flatMap {
           case Some(value) => Created(value)
           case None        => InternalServerError()

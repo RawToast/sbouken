@@ -1,5 +1,7 @@
 package bouken.server
 
+import java.util.UUID
+
 import io.circe._
 import io.circe.generic.semiauto.deriveEncoder
 import io.circe.generic.extras.semiauto.deriveUnwrappedEncoder
@@ -8,7 +10,7 @@ import enumeratum._
 
 object Protocol {
 
-  case class GameViewResponse(player: GameViewResponse.Player, currentLevel: GameViewResponse.CurrentLevel)
+  case class GameViewResponse(id: UUID, player: GameViewResponse.Player, currentLevel: GameViewResponse.CurrentLevel)
 
   object GameViewResponse {
     def apply(game: Game): Option[GameViewResponse] = {
@@ -20,6 +22,7 @@ object Protocol {
         tiles = areaToTiles(area.value)
         currentLevel = CurrentLevel(game.world.current, tiles, Some(level.tileSet))
       } yield GameViewResponse(
+        game.uuid,
         player,
         currentLevel
       )
