@@ -8,7 +8,6 @@ scalaVersion := "2.12.8"
 val circeVersion = "0.11.1"
 val http4sVersion = "0.20.0-M5"
 
-
 resolvers ++= Seq(
   Resolver.sonatypeRepo("releases"),
   Resolver.sonatypeRepo("snapshots")
@@ -25,6 +24,7 @@ libraryDependencies ++= Seq(
   // https
   "org.http4s" %% "http4s-dsl" % http4sVersion,
   "org.http4s" %% "http4s-blaze-server" % http4sVersion,
+  "org.http4s" %% "http4s-blaze-client" % http4sVersion,
   "org.http4s" %% "http4s-circe" % http4sVersion,
   // mtl
   "com.olegpy" %% "meow-mtl" % "0.2.0",
