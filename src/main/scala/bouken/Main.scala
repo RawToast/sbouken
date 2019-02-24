@@ -14,7 +14,7 @@ object Main extends IOApp {
   private val gameManager = GameManager.inMemory[IO]
   private val routes = bouken.server.Routes(gameManager)
 
-  val httpApp: HttpApp[IO] = Router("/" -> routes.gameService).orNotFound
+  private val httpApp: HttpApp[IO] = Router("/" -> routes.gameService).orNotFound
 
   def run(args: List[String]): IO[ExitCode] =
     BlazeServerBuilder[IO]
