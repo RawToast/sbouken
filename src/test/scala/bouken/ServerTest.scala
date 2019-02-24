@@ -24,13 +24,13 @@ class ServerTest extends FreeSpec with Matchers {
     val fibre: Fiber[IO, ExitCode] = server.start.unsafeRunSync()
 
     "Returns NotFound for invalid requests" in {
-      val request = Request[IO](method = Method.DELETE, uri = Uri.unsafeFromString("http://localhost:8080/dave"))
+      val request = Request[IO](method = Method.DELETE, uri = Uri.unsafeFromString("http://localhost:8088/dave"))
       lazy val response: Either[Throwable, Json] = httpClient.expect[Json](request).attempt.unsafeRunSync()
 
       response shouldBe Left(UnexpectedStatus(Status.NotFound))
     }
     "Responds successfully to valid requests" in {
-      val request = Request[IO](method = Method.POST, uri = Uri.unsafeFromString("http://localhost:8080/dave"))
+      val request = Request[IO](method = Method.POST, uri = Uri.unsafeFromString("http://localhost:8088/dave"))
       lazy val response: Either[Throwable, Json] = httpClient.expect[Json](request).attempt.unsafeRunSync()
 
       response shouldBe a[Right[_, Json]]
