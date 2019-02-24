@@ -21,7 +21,7 @@ class ServerTest extends FreeSpec with Matchers {
     implicit val decoder: EntityDecoder[IO, Json] = org.http4s.circe.jsonDecoder
     implicit val timer: Timer[IO] = IO.timer(global)
 
-    lazy val fibre: Fiber[IO, ExitCode] = server.start.unsafeRunSync()
+    val fibre: Fiber[IO, ExitCode] = server.start.unsafeRunSync()
 
     "Returns NotFound for invalid requests" in {
       val request = Request[IO](method = Method.DELETE, uri = Uri.unsafeFromString("http://localhost:8080/dave"))
