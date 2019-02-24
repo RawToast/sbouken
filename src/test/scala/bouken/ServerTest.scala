@@ -18,27 +18,22 @@ class ServerTest extends FreeSpec with Matchers {
   import ServerTest._
 
   "GameServer" - {
-    "Responds successfully to valid requests" in {
-      implicit val decoder: EntityDecoder[IO, Json] = org.http4s.circe.jsonDecoder
-      implicit val timer: Timer[IO] = IO.timer(global)
+    implicit val decoder: EntityDecoder[IO, Json] = org.http4s.circe.jsonDecoder
+    implicit val timer: Timer[IO] = IO.timer(global)
 
-      val fibre: Fiber[IO, ExitCode] = server.start.unsafeRunSync()
+    lazy val fibre: Fiber[IO, ExitCode] = server.start.unsafeRunSync()
 
-      val request = Request[IO](method = Method.POST, uri = Uri.unsafeFromString("http://localhost:8080/dave"))
-      val response: Either[Throwable, Json] = httpClient.expect[Json](request).attempt.unsafeRunSync()
-
-      response shouldBe a[Right[_, Json]]
-    }
     "Returns NotFound for invalid requests" in {
-      implicit val decoder: EntityDecoder[IO, Json] = org.http4s.circe.jsonDecoder
-      implicit val timer: Timer[IO] = IO.timer(global)
-
-      val fibre: Fiber[IO, ExitCode] = server.start.unsafeRunSync()
-
       val request = Request[IO](method = Method.DELETE, uri = Uri.unsafeFromString("http://localhost:8080/dave"))
-      val response: Either[Throwable, Json] = httpClient.expect[Json](request).attempt.unsafeRunSync()
+      lazy val response: Either[Throwable, Json] = httpClient.expect[Json](request).attempt.unsafeRunSync()
 
       response shouldBe Left(UnexpectedStatus(Status.NotFound))
+    }
+    "Responds successfully to valid requests" in {
+      val request = Request[IO](method = Method.POST, uri = Uri.unsafeFromString("http://localhost:8080/dave"))
+      lazy val response: Either[Throwable, Json] = httpClient.expect[Json](request).attempt.unsafeRunSync()
+
+      response shouldBe a[Right[_, Json]]
     }
   }
 }
