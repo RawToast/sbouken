@@ -16,7 +16,7 @@ object Main extends IOApp {
 
   private val httpApp: HttpApp[IO] = Router("/" -> routes.gameService).orNotFound
 
-  def run(args: List[String]): IO[ExitCode] = {
+  def run(args: List[String]): IO[ExitCode] =
     BlazeServerBuilder[IO]
       .bindHttp(8080, "0.0.0.0")
       .withHttpApp(httpApp)
@@ -24,5 +24,4 @@ object Main extends IOApp {
       .compile
       .drain
       .as(ExitCode.Success)
-  }
 }

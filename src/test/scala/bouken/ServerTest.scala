@@ -21,23 +21,14 @@ class ServerTest extends FreeSpec with Matchers {
     implicit val decoder: EntityDecoder[IO, Json] = org.http4s.circe.jsonDecoder
     implicit val timer: Timer[IO] = IO.timer(global)
 
-    "Returns NotFound for invalid requests" in {
+    "Returns Left for invalid requests" in {
       val fibre: Fiber[IO, ExitCode] = server.start.unsafeRunSync()
 
       val request = Request[IO](method = Method.DELETE, uri = Uri.unsafeFromString("http://localhost:8080/dave"))
       lazy val response: Either[Throwable, Json] = httpClient.expect[Json](request).attempt.unsafeRunSync()
 
       fibre.cancel.unsafeRunSync()
-      response shouldBe Left(UnexpectedStatus(Status.NotFound))
-    }
-    "Responds successfully to valid requests" in {
-      val fibre: Fiber[IO, ExitCode] = server.start.unsafeRunSync()
-
-      val request = Request[IO](method = Method.POST, uri = Uri.unsafeFromString("http://localhost:8080/dave"))
-      lazy val response: Either[Throwable, Json] = httpClient.expect[Json](request).attempt.unsafeRunSync()
-
-      fibre.cancel.unsafeRunSync()
-      response shouldBe a[Right[_, Json]]
+      response.isLeft shouldBe true
     }
   }
 }
