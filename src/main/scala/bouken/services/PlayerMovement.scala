@@ -15,7 +15,7 @@ abstract class PlayerMovement[F[_]] {
     implicit
     S: MonadState[F, Player],
     T: FunctorTell[F, Chain[String]]
-  ): Unit
+  ): F[Unit]
 
   def tileEffect()(
     implicit S: MonadState[F, Player],
