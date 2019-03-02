@@ -1,6 +1,6 @@
 open Jest;
 
-describe("Key", () => {
+describe("Instructions", () => {
   open ExpectJs;
 
   test("Renders with no input", () => {

@@ -16,9 +16,9 @@
     esutils "^2.0.2"
     js-tokens "^4.0.0"
 
-"@glennsl/bs-jest@glennsl/bs-jest":
-  version "0.4.4"
-  resolved "https://codeload.github.com/glennsl/bs-jest/tar.gz/879b67fc0f2888059402a2dc8e3a443c1430363a"
+"@glennsl/bs-jest@^0.4.7":
+  version "0.4.7"
+  resolved "https://registry.yarnpkg.com/@glennsl/bs-jest/-/bs-jest-0.4.7.tgz#9719dc8c8ceed11d2de92adf9e02dd364c3f9398"
   dependencies:
     jest "^23.5.0"
 
@@ -943,9 +943,9 @@ bs-fetch@^0.3.0:
   version "0.3.0"
   resolved "https://registry.yarnpkg.com/bs-fetch/-/bs-fetch-0.3.0.tgz#60c64457359d0c7e0798d5a04db8987d16c4f8f3"
 
-bs-platform@^4.0.5:
-  version "4.0.5"
-  resolved "https://registry.yarnpkg.com/bs-platform/-/bs-platform-4.0.5.tgz#d4fd9bbdd11765af5b75110a5655065ece05eed6"
+bs-platform@^4.0.18:
+  version "4.0.18"
+  resolved "https://registry.yarnpkg.com/bs-platform/-/bs-platform-4.0.18.tgz#d17b8693ba1f714d9b27e0ddb365f2069ba4b8a0"
 
 bs-react-test-renderer@^2.0.0:
   version "2.0.0"
