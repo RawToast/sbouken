@@ -43,10 +43,11 @@ jobs:
     - run: cd server; bash <(curl -s https://codecov.io/bash)
   "frontend":
     docker:
-      - image: circleci/node:8
+      - image: circleci/node:9
     working_directory: ~/repo
     steps:
       - checkout
+      - run: cd reason-frontend; yarn
       - run: cd reason-frontend; yarn bsb -clean-world -make-world
       - run: cd reason-frontend; yarn coverage
       - run:
