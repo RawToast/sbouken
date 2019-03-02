@@ -8,7 +8,7 @@ let make = (~startGame, _children) => {
   reducer: (state: string, _ext) =>  ReasonReact.Update(state),
   render: (self) => {
     <div>
-      <h1>(string("Bouken"))</h1>
+      <h1>(string("Super Bouken"))</h1>
       <input className="nameinput"
         onChange=(evt => self.send(ReactDOMRe.domElementToObj(ReactEventRe.Form.target(evt))##value))
         onKeyPress=(evt => if (ReactEventRe.Keyboard.key(evt) == "Enter") { 

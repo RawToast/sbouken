@@ -129,43 +129,6 @@ module type WorldCreator = {
   let loadWorldAsync: (string, list((string, string))) => Js.Promise.t(world);
 };
 
-module type Places = {
-  let findPlayer: (area) => option(player); 
-  let findEnemy: (string, area) => option(enemy);
-  let canMoveTo: (~overwrite:bool=?, int, int, area) => Belt.Result.t(place, error);
-  let removeOccupant: (int, int, area) => area;
-  let movePlayer: (int, int, float, area) => Belt.Result.t (playerArea, error);
-  let setPlayerAt: (int, int, player, float, area) => Belt.Result.t (area, error);
-  let setEnemyAt: (int, int, enemy, float, area) => Belt.Result.t (area, error);
-  let getPlace: (int, int, area) => option(place);
-  let findStairs: (int, area) => option(place);
-  let locationOfStairs: (int, area) => option((int, int));
-};
-
-module type Movement = {
-  let canNavigateTo: (~limit: int=?, area, (int, int), (int, int)) => bool;
-  let suggestMove: (~limit: int=?, ~incTerrain: bool=?, area, (int, int), (int, int)) => (int, int);
-};
-
-module type Positions = {
-  let divisor: float;
-  let isActive: stats => bool;
-  let increment: stats => stats;
-  let incrementAll: area => area;
-};
-
-module type GameLoop = {
-  let continue: game => game;
-};
-
-module type EnemyLoop = {
-  let findActiveEnemies: area => list(enemyInfo);
-  let canAttack: (~range: int=?, area, enemyInfo) => bool;
-  let attack: (enemyInfo, area) => option((area, player));
-  let takeTurn: (enemyInfo, level, game) => option(game);
-  let chase: (area, enemyInfo) => ((int, int), option((int, int)));
-};
-
 module type Game = {
   let create: string => game;
   let attack: (int, int, game) => actionResult;

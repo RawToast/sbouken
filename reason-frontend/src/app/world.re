@@ -39,7 +39,7 @@ module FetchCsvBuilder = {
       |> Js.Promise.then_(world => 
         world 
           |> World.currentLevel
-          |> Option.fmap(Level.modifyTile(x, y, {tile: GROUND, state: Player(player), tileEffect: NoEff, visible: false }))
+          |> Option.fmap(Level.modifyTile(x, y, {tile: GROUND, state: Player(player), tileEffect: NoEff, visible: true }))
           |> Option.fmap(World.updateLevel(_, world))
           |> Option.default(world) 
           |> Js.Promise.resolve);

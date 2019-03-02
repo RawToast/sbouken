@@ -1,7 +1,7 @@
 open Types;
 
 module CsvWorldBuilder: WorldCreator = {
-  let makeExit = score => { tile: EXIT(int_of_string((score))), state: Empty, tileEffect: NoEff, visible: false };
+  let makeExit = score => { tile: EXIT(int_of_string((score))), state: Empty, tileEffect: NoEff, visible: true };
 
   let tail = Js.String.sliceToEnd(~from=1);
   let head = Js.String.charAt(0);
@@ -11,18 +11,18 @@ module CsvWorldBuilder: WorldCreator = {
     let level = str |> tail;
 
     let link = { id: id, level: level};
-    { tile: STAIRS(link), state: Empty, tileEffect: NoEff, visible: false };
+    { tile: STAIRS(link), state: Empty, tileEffect: NoEff, visible: true };
   };
 
   let makeTile = (str) => {
     switch (Js.String.charAt(0, str)) {
-    | "." => { tile: GROUND, state: Empty, tileEffect: NoEff, visible: false }
-    | ":" => { tile: ROUGH, state: Empty, tileEffect: NoEff, visible: false }
-    | "w" => { tile: WATER, state: Empty, tileEffect: NoEff, visible: false }
-    | "#" => { tile: WALL, state: Empty, tileEffect: NoEff, visible: false }
+    | "." => { tile: GROUND, state: Empty, tileEffect: NoEff, visible: true }
+    | ":" => { tile: ROUGH, state: Empty, tileEffect: NoEff, visible: true }
+    | "w" => { tile: WATER, state: Empty, tileEffect: NoEff, visible: true }
+    | "#" => { tile: WALL, state: Empty, tileEffect: NoEff, visible: true }
     | "e" => str |> tail |> makeExit
     | "/" => str |> tail |> makeStairs
-    | _ => { tile: WALL, state: Empty, tileEffect: NoEff, visible: false }
+    | _ => { tile: WALL, state: Empty, tileEffect: NoEff, visible: true }
     };
   };
 

@@ -1,6 +1,6 @@
 {
   "name": "sbouken",
-  "version": "0.1.0",
+  "version": "0.0.1",
   "description": "ASCII Roguelike",
   "license": "MIT",
   "scripts": {
@@ -12,7 +12,7 @@
     "bsb": "bsb -make-world",
     "test": "jest --env=jsdom --testMatch='**/test/*test.{bs.js}' --watch",
     "coverage": "jest --env=node --testMatch='**/test/*test.{bs.js}' --coverage",
-    "ci": "yarn bsb && jest --env=jsdom --testMatch='**/test/*test.{bs.js}' --coverage && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js" 
+    "ci": "yarn bsb && jest --env=jsdom --testMatch='**/test/*test.{bs.js}' --coverage && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js"
   },
   "dependencies": {
     "bs-fetch": "^0.3.0",
