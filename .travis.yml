@@ -8,11 +8,13 @@ matrix:
         - cd server
       script: 
         - sbt test
-        
+
     - language: node_js
       node_js:
         - "8"
       cache: yarn
+        directories:
+        - "node_modules"
       before_script:
         - cd reason-frontend
-      script: ["yarn add coveralls", "yarn bsb -clean-world -make-world", "yarn coverage"]
+      script: ["yarn add coveralls", "yarn bsb -clean-world -make-world", "yarn ci"]

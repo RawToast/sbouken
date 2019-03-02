@@ -2,20 +2,22 @@
 
  Super Bouken... or Scala Bouken... IDK		
 
-[![CircleCI](https://circleci.com/gh/RawToast/sbouken.svg?style=svg)](https://circleci.com/gh/RawToast/sbouken)		
-[![codecov](https://codecov.io/gh/RawToast/sbouken/branch/master/graph/badge.svg)](https://codecov.io/gh/RawToast/sbouken)	|
+[![CircleCI](https://circleci.com/gh/RawToast/sbouken.svg?style=svg)](https://circleci.com/gh/RawToast/sbouken)			|
 
 [T1]: https://travis-matrix-badges.herokuapp.com/repos/RawToast/sbouken/branches/master/1
 [T2]: https://travis-matrix-badges.herokuapp.com/repos/RawToast/sbouken/branches/master/2
 [TR]: https://travis-ci.org/RawToast/sbouken
 
 [C1]: https://codecov.io/gh/RawToast/sbouken/branch/master/graph/badge.svg
-[CR]: https://codecov.io/gh/RawToast/sbouken
+[B1]: https://codecov.io/gh/RawToast/sbouken
+
+[C2]: https://coveralls.io/repos/github/RawToast/sbouken/badge.svg?branch=master
+[B2]: https://coveralls.io/github/RawToast/sbouken?branch=master
 
 [Server](server/)      | [Frontend](reason-frontend/)|
 |-----------------------|---------------------|
 | [![Travis][T1]][TR]   | [![Travis][T2]][TR] |
-| [![Coveralls][C1]][CR]|                     |
+| [![CodeCov][C1]][B1]| [ [![Coveralls][C2]][B2] |
 
  WIP rewrite of [Bouken](https://github.com/RawToast/bouken).		
 
