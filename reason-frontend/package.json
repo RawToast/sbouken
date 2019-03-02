@@ -15,9 +15,10 @@
     "ci": "yarn bsb && jest --env=jsdom --testMatch='**/test/*test.{bs.js}' --coverage && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js"
   },
   "dependencies": {
-    "bs-fetch": "^0.3.0",
+    "@glennsl/bs-json": "^3.0.0",
+    "bs-fetch": "^0.3.1",
     "bs-webapi": "0.11.0",
-    "rationale": "^0.1.7",
+    "rationale": "^0.1.10",
     "react": "^16.4.2",
     "react-dom": "^16.4.2",
     "reason-react": "^0.5.3"
@@ -27,9 +28,9 @@
     "bs-platform": "^4.0.18",
     "bs-react-test-renderer": "^2.0.0",
     "bsb-js": "^1.1.7",
-    "concurrently": "^3.6.1",
-    "parcel-bundler": "^1.9.7",
-    "rimraf": "^2.6.2"
+    "concurrently": "^4.1.0",
+    "parcel-bundler": "^1.11.0",
+    "rimraf": "^2.6.3"
   },
   "jest": {
     "collectCoverageFrom": [
