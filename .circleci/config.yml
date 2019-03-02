@@ -4,7 +4,7 @@
 #
 version: 2
 jobs:
-  build:
+  "server":
     docker:
     # specify the version you desire here
     - image: circleci/openjdk:8-jdk-node
@@ -41,3 +41,20 @@ jobs:
     # run tests!
     - run: cd server; cat /dev/null | sbt clean validate
     - run: cd server; bash <(curl -s https://codecov.io/bash)
+  "frontend":
+    docker:
+      - image: circleci/node:8
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - run: cd reason-frontend; yarn bsb -clean-world -make-world
+      - run: cd reason-frontend; yarn coverage
+      - run:
+          name: Run tests
+          command: rake
+workflows:
+  version: 2
+  build:
+    jobs:
+      - "server"
+      - "frontend"
