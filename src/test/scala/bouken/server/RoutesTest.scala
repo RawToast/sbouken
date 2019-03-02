@@ -31,7 +31,6 @@ class RoutesTest extends FreeSpec with Matchers {
 
           val name = jsonResponse.hcursor.downField("player").downField("name").as[String].toOption
           name shouldBe Some("test")
-          //          println(Printer.noSpaces.copy(dropNullValues = true).pretty(jsonResponse))
         }
       }
     }

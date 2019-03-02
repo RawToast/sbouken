@@ -3,7 +3,7 @@ package bouken.services
 import java.util.UUID
 
 import bouken.domain._
-import bouken.world.WorldParser
+import bouken.world._
 import cats.syntax.functor._
 import cats.syntax.flatMap._
 
@@ -15,6 +15,16 @@ abstract class GameManager[F[_]: ManagementMonadError] {
   def saveGame(game: Game): F[Unit]
 
   def loadGame(uuid: UUID): F[Game]
+}
+
+object GameManager {
+  def inMemory[F[_]](implicit MonadError: ManagementMonadError[F]): InMemoryGameManager[F] = {
+    val areaParser = OptionAreaParser(OptionPlaceParser)
+    val levelParser = OptionLevelParser(areaParser)
+    val worldParser = OptionWorldParser(levelParser)
+
+    InMemoryGameManager(worldParser)
+  }
 }
 
 case class InMemoryGameManager[F[_]: ManagementMonadError](
