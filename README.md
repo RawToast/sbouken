@@ -5,9 +5,9 @@
 [![CircleCI](https://circleci.com/gh/RawToast/sbouken.svg?style=svg)](https://circleci.com/gh/RawToast/sbouken)		
 [![codecov](https://codecov.io/gh/RawToast/sbouken/branch/master/graph/badge.svg)](https://codecov.io/gh/RawToast/sbouken)	|
 
-[T1]: https://travis-matrix-badges.herokuapp.com/repos/RawToast/dokusho/branches/master/1
-[T2]: https://travis-matrix-badges.herokuapp.com/repos/RawToast/dokusho/branches/master/2
-[TR]: https://travis-ci.org/RawToast/dokusho
+[T1]: https://travis-matrix-badges.herokuapp.com/repos/RawToast/sbouken/branches/master/1
+[T2]: https://travis-matrix-badges.herokuapp.com/repos/RawToast/sbouken/branches/master/2
+[TR]: https://travis-ci.org/RawToast/sbouken
 
 [C1]: https://codecov.io/gh/RawToast/sbouken/branch/master/graph/badge.svg
 [CR]: https://codecov.io/gh/RawToast/sbouken
