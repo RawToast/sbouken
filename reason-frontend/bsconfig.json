@@ -1,0 +1,33 @@
+{
+  "name": "bouken",
+  "reason": { "react-jsx": 2 },
+  "sources": [
+    {
+      "dir": "src",
+      "subdirs": [ "app", "ui" ]
+    },
+    {
+      "dir": "src/test",
+      "type": "dev"
+    }
+  ],
+  "package-specs": [
+    {
+      "module": "commonjs",
+      "in-source": true
+    }
+  ],
+  "suffix": ".bs.js",
+  "namespace": true,
+  "bs-dependencies": [
+    "reason-react",
+    "rationale",
+    "bs-webapi",
+    "bs-fetch"
+  ],
+  "bs-dev-dependencies": [
+    "@glennsl/bs-jest",
+    "bs-react-test-renderer"
+  ],
+  "refmt": 3
+}

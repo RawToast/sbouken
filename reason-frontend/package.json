@@ -1,0 +1,40 @@
+{
+  "name": "sbouken",
+  "version": "0.0.1",
+  "description": "ASCII Roguelike",
+  "license": "MIT",
+  "scripts": {
+    "start": "concurrently -c --kill-others 'npm:watch-html' 'npm:watch-reason'",
+    "build": "parcel build src/index.html --public-url /",
+    "clean": "rimraf .cache lib dist .merlin src/*.js",
+    "watch-html": "parcel src/index.html",
+    "watch-reason": "bsb -make-world -w",
+    "bsb": "bsb -make-world",
+    "test": "jest --env=jsdom --testMatch='**/test/*test.{bs.js}' --watch",
+    "coverage": "jest --env=node --testMatch='**/test/*test.{bs.js}' --coverage",
+    "ci": "yarn bsb && jest --env=jsdom --testMatch='**/test/*test.{bs.js}' --coverage && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js"
+  },
+  "dependencies": {
+    "bs-fetch": "^0.3.0",
+    "bs-webapi": "0.11.0",
+    "rationale": "^0.1.7",
+    "react": "^16.4.2",
+    "react-dom": "^16.4.2",
+    "reason-react": "^0.5.3"
+  },
+  "devDependencies": {
+    "@glennsl/bs-jest": "glennsl/bs-jest",
+    "bs-platform": "^4.0.5",
+    "bs-react-test-renderer": "^2.0.0",
+    "bsb-js": "^1.1.7",
+    "concurrently": "^3.6.1",
+    "parcel-bundler": "^1.9.7",
+    "rimraf": "^2.6.2"
+  },
+  "jest": {
+    "collectCoverageFrom": [
+      "**/app/*.{bs.js}",
+      "**/ui/*.{bs.js}"
+    ]
+  }
+}
