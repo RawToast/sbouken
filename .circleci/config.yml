@@ -24,12 +24,12 @@ jobs:
     steps:
     - checkout
 
-    - run: ls; cd server; ls
+    - run: cd server; ls
 
     # Download and cache dependencies
     - restore_cache:
         keys:
-        - v1-dependencies-{{ checksum "build.sbt" }}
+        - v1-dependencies-{{ checksum "server/build.sbt" }}
         # fallback to using the latest cache if no exact match is found
         - v1-dependencies-
 
@@ -38,8 +38,8 @@ jobs:
     - save_cache:
         paths:
         - ~/.m2
-        key: v1-dependencies--{{ checksum "build.sbt" }}
+        key: v1-dependencies--{{ checksum "server/build.sbt" }}
 
     # run tests!
-    - run: cat /dev/null | sbt clean validate
+    - run: ls; cat /dev/null | sbt clean validate
     - run: bash <(curl -s https://codecov.io/bash)
