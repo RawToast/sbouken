@@ -44,11 +44,13 @@ jobs:
   "frontend":
     docker:
       - image: circleci/node:9
+    
     working_directory: ~/repo
+
     steps:
     - checkout
 
-        # Download and cache dependencies
+    # Download and cache dependencies
     - restore_cache:
         keys:
         - vnode-v1-{{ .Branch }}-{{ checksum "reason-frontend/yarn.lock" }}
@@ -58,9 +60,9 @@ jobs:
     - run: cd reason-frontend; yarn
 
     - save_cache:
-      paths:
-      - ~/usr/local/lib/node_modules
-      key: node-v1-{{ .Branch }}-{{ checksum "reason-frontend/yarn.lock" }}
+        paths:
+        - ~/usr/local/lib/node_modules
+        key: node-v1-{{ .Branch }}-{{ checksum "reason-frontend/yarn.lock" }}
 
     # - run: cd reason-frontend; yarn add coveralls
     - run: cd reason-frontend; yarn bsb -clean-world -make-world
