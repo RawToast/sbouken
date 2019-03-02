@@ -21,10 +21,13 @@
   "namespace": true,
   "bs-dependencies": [
     "reason-react",
-    "@glennsl/bs-jest",
     "rationale",
     "bs-webapi",
     "bs-fetch"
+  ],
+  "bs-dev-dependencies": [
+    "@glennsl/bs-jest",
+    "bs-react-test-renderer"
   ],
   "refmt": 3
 }

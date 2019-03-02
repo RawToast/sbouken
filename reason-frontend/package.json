@@ -25,6 +25,7 @@
   "devDependencies": {
     "@glennsl/bs-jest": "glennsl/bs-jest",
     "bs-platform": "^4.0.5",
+    "bs-react-test-renderer": "^2.0.0",
     "bsb-js": "^1.1.7",
     "concurrently": "^3.6.1",
     "parcel-bundler": "^1.9.7",
@@ -32,7 +33,8 @@
   },
   "jest": {
     "collectCoverageFrom": [
-      "**/app/*.{bs.js}"
+      "**/app/*.{bs.js}",
+      "**/ui/*.{bs.js}"
     ]
   }
 }
