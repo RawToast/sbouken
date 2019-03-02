@@ -17,4 +17,4 @@ matrix:
         - "node_modules"
       before_script:
         - cd reason-frontend
-      script: ["yarn add coveralls", "yarn bsb -clean-world -make-world", "yarn ci"]
+      script: ["yarn add coveralls", "yarn bsb -clean-world -make-world", "yarn coverage"]
