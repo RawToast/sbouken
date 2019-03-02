@@ -28,7 +28,25 @@ let component = ReasonReact.reducerComponent("App");
 
 let movement = (x, y) => MovePlayer(x, y);
 
-module Game = Modules.Game;
+module Game: Types.Game = {
+  let initPlayer = name => {name: name, stats: { health: 10, speed: 1.0, position: 0., damage: 3 }, gold: 0, location: (6, 6)};
+
+  let initgame = pname => initPlayer(pname) |> p => {
+      player: p,
+      world: World.Builder.create(p),
+      turn: 0.
+      };
+
+  let create = name => initgame(name);
+
+  let attack = (x, y, game) => Error("Not currently supported");
+  let movePlayer = (x, y, game) => Ok(game);
+  let useStairs = game => Error("Not currently supported");
+  let useExit = game => Error("Not currently supported");
+  let resultUpdateVision = actionResult => actionResult;
+
+  let updateVision = game => game;
+};
 
 let mapGameOrError = (f, view) =>
   switch (view) {

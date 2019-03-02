@@ -130,9 +130,10 @@ module CreateEnemyLoop = (Pos: Types.Positions, Places: Types.Places, World: Wor
     else {
       let loc = List.hd(playerLocations);
 
-      if(Pathing.Navigation.canNavigateTo(~limit=range, area, enemyInfo.location, loc)) {
-        let move: (int, int) = Pathing.Navigation.suggestMove(~limit=range, ~incTerrain=enemyAi.terrainCost, area, enemyInfo.location, loc);
-        (move, Some(loc));
+      /*if(Pathing.Navigation.canNavigateTo(~limit=range, area, enemyInfo.location, loc)) {*/
+      if(true){
+        /* let move: (int, int) = Pathing.Navigation.suggestMove(~limit=range, ~incTerrain=enemyAi.terrainCost, area, enemyInfo.location, loc);*/
+        ((0, 0), Some(loc));
       } else ((0, 0), None)
     };
   };
@@ -140,17 +141,18 @@ module CreateEnemyLoop = (Pos: Types.Positions, Places: Types.Places, World: Wor
   let toLastSeen = (area, (mx, my), enemyInfo) => {
     let enemyAi = enemyInfo.enemy.ai;
     let range = enemyAi.moveRange;
-      if(Pathing.Navigation.canNavigateTo(~limit=range, area, enemyInfo.location, (mx, my)))
+      /*if(Pathing.Navigation.canNavigateTo(~limit=range, area, enemyInfo.location, (mx, my)))
         Pathing.Navigation.suggestMove(~limit=range, ~incTerrain=enemyAi.terrainCost, area, enemyInfo.location, (mx, my))
-      else (0, 0)
+      else */
+      (0, 0)
   };
 
   let takeTurn = (activeEnemy, level, game) => {
     
     let canSee = (ei) => {
       let range = ei.enemy.ai.moveRange;
-      if(ei.enemy.ai.mustSee) Pathing.VisionUtil.canSee(~limit=range, level.map, ei.location, game.player.location)
-      else canAttack(~range=range, level.map, ei)
+      /*if(ei.enemy.ai.mustSee) Pathing.VisionUtil.canSee(~limit=range, level.map, ei.location, game.player.location)*/
+      canAttack(~range=range, level.map, ei)
     };
 
     if (canAttack(~range=activeEnemy.enemy.ai.attackRange, level.map, activeEnemy)) {
