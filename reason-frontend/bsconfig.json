@@ -4,7 +4,7 @@
   "sources": [
     {
       "dir": "src",
-      "subdirs": [ "app", "ui" ]
+      "subdirs": [ "app", "old", "ui" ]
     },
     {
       "dir": "src/test",
