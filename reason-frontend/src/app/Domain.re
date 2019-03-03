@@ -6,6 +6,11 @@ type player = {
   score: int,
 };
 
+type position = {
+  x: int,
+  y: int
+};
+
 module Decoders = {
   open Rationale.Option;
   open Json;
@@ -17,5 +22,11 @@ module Decoders = {
       timeDelta: json |> field("timeDelta", Decode.float),
       gold: json |> optional(field("gold", Decode.int)) |> default(0),
       score: json |> optional(field("score", Decode.int)) |> default(0),
+    };
+
+  let decodePosition = (json: Js.Json.t): position =>
+    Decode.{
+      x: json |> field("x", Decode.int),
+      y: json |> field("y", Decode.int)
     };
 };

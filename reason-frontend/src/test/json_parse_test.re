@@ -47,6 +47,25 @@ describe("Parser", () => {
          })
     );
   });
+  
+  describe("Parse Position Json", () => {
+    let positionJson = {|{
+          "x": 6,
+          "y": 1
+        }|};
+
+    test("Parses valid json", () =>
+      positionJson
+      |> Json.parseOrRaise
+      |> Domain.Decoders.decodePosition
+      |> expect(_)
+      |> toEqual({
+           x: 6,
+           y: 1
+         })
+    );
+  });
+  
   describe("Parse Full Json", () =>
     test("Parses valid json", () =>
       expect(true) |> toBe(true)

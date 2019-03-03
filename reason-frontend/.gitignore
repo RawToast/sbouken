@@ -26,6 +26,7 @@ yarn-debug.log*
 yarn-error.log*
 .bsb.lock
 .iml
+.idea
 
 # Generated bucklescript js
 *.bs.js
