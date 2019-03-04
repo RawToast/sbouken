@@ -65,6 +65,71 @@ describe("Decoders", () => {
          })
     );
   });
+
+  describe("DecodeTile", () => {
+    test("Can decode a ground tile", () =>
+      "Ground"
+      |> Domain.Decoders.decodeTile
+      |> expect(_)
+      |> toEqual(Domain.GROUND)
+    );
+
+    test("Can decode a rough tile", () =>
+      "Rough"
+      |> Domain.Decoders.decodeTile
+      |> expect(_)
+      |> toEqual(Domain.ROUGH)
+    );
+
+    test("Can decode a water tile", () =>
+      "Water"
+      |> Domain.Decoders.decodeTile
+      |> expect(_)
+      |> toEqual(Domain.WATER)
+    );
+
+    test("Can decode an exit tile", () =>
+      "Exit"
+      |> Domain.Decoders.decodeTile
+      |> expect(_)
+      |> toEqual(Domain.EXIT)
+    );
+
+    test("Can decode a wall tile", () =>
+      "Wall"
+      |> Domain.Decoders.decodeTile
+      |> expect(_)
+      |> toEqual(Domain.WALL)
+    );
+
+    test("Decodes Stairs to a Stairs up tile", () =>
+      "Stairs"
+      |> Domain.Decoders.decodeTile
+      |> expect(_)
+      |> toEqual(Domain.STAIRS_UP)
+    );
+
+    test("Decodes StairsUp to a Stairs up tile", () =>
+      "StairsUp"
+      |> Domain.Decoders.decodeTile
+      |> expect(_)
+      |> toEqual(Domain.STAIRS_UP)
+    );
+
+    test("Decodes StairsDown to a Stairs down tile", () =>
+      "StairsDown"
+      |> Domain.Decoders.decodeTile
+      |> expect(_)
+      |> toEqual(Domain.STAIRS_DOWN)
+    );
+
+    test("Defaults to Wall when the tile is invalid", () =>
+      "HEy"
+      |> Domain.Decoders.decodeTile
+      |> expect(_)
+      |> toEqual(Domain.WALL)
+    );
+  });
   
   describe("Decode Full Json", () =>
     test("Decodes valid json", () =>

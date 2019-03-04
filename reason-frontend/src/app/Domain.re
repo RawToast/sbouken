@@ -11,6 +11,15 @@ type position = {
   y: int
 };
 
+type tile =
+  | GROUND
+  | ROUGH
+  | STAIRS_UP
+  | STAIRS_DOWN
+  | WATER
+  | WALL
+  | EXIT;
+
 module Decoders = {
   open Rationale.Option;
   open Json;
@@ -28,5 +37,18 @@ module Decoders = {
     Decode.{
       x: json |> field("x", Decode.int),
       y: json |> field("y", Decode.int)
+    };
+
+  let decodeTile = (tileString): tile =>
+    switch(tileString) {
+    | "Ground" => GROUND
+    | "Rough" => ROUGH
+    | "Water" => WATER
+    | "Wall" => WALL
+    | "Exit" => EXIT
+    | "Stairs" => STAIRS_UP
+    | "StairsUp" => STAIRS_UP
+    | "StairsDown" => STAIRS_DOWN
+    | _ => WALL
     };
 };
