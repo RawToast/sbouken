@@ -128,6 +128,43 @@ describe("Decoders", () => {
     );
   });
 
+  describe("DecodeTileEffect", () => {
+    test("Can decode a trap", () =>
+      "Trap"
+      |> Domain.Decoders.decodeTileEffect
+      |> expect(_)
+      |> toEqual(Some(TRAP))
+    );
+
+    test("Can decode a snare", () =>
+      "Snare"
+      |> Domain.Decoders.decodeTileEffect
+      |> expect(_)
+      |> toEqual(Some(SNARE))
+    );
+
+    test("Can decode gold", () =>
+      "Gold"
+      |> Domain.Decoders.decodeTileEffect
+      |> expect(_)
+      |> toEqual(Some(GOLD))
+    );
+
+    test("Can decode heal", () =>
+      "Heal"
+      |> Domain.Decoders.decodeTileEffect
+      |> expect(_)
+      |> toEqual(Some(Domain.HEAL))
+    );
+
+    test("Defaults to None", () =>
+      "SomethingElse"
+      |> Domain.Decoders.decodeTileEffect
+      |> expect(_)
+      |> toEqual(None)
+    );
+  });
+
   describe("DecodeMeta", () => {
     let metaJson = {|{
           "tile": "Wall",
@@ -139,7 +176,19 @@ describe("Decoders", () => {
       |> Json.parseOrRaise
       |> Domain.Decoders.decodeMeta
       |> expect(_)
-      |> toEqual({tile: Domain.WALL, visbility: 7})
+      |> toEqual({tile: Domain.WALL, visbility: 7, tileEffect: None})
+    );
+
+    test("Decodes meta with an effect", () =>
+      {|{
+          "tile" : "Wall",
+          "visibility" : 7,
+          "tileEffect" : "Trap"
+        }|}
+      |> Json.parseOrRaise
+      |> Domain.Decoders.decodeMeta
+      |> expect(_)
+      |> toEqual({tile: Domain.WALL, visbility: 7, tileEffect: Some(TRAP)})
     );
   });
 
@@ -168,6 +217,7 @@ describe("Decoders", () => {
            meta: {
              tile: Domain.GROUND,
              visbility: 5,
+             tileEffect: None
            },
          })
     );

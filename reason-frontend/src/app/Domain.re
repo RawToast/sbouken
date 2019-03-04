@@ -20,9 +20,16 @@ type tile =
   | WALL
   | EXIT;
 
+type tileEffect =
+  | TRAP
+  | SNARE
+  | HEAL
+  | GOLD;
+
 type meta = {
   tile,
   visbility: int,
+  tileEffect: option(tileEffect)
 };
 
 type place = {
@@ -62,11 +69,22 @@ module Decoders = {
     | _ => WALL
     };
 
-  let decodeMeta = (json: Js.Json.t): meta =>
+    let decodeTileEffect = (tileEffectString): option(tileEffect) =>
+    switch (tileEffectString) {
+    | "Trap" => Some(TRAP)
+    | "Snare" => Some(SNARE)
+    | "Heal" => Some(HEAL)
+    | "Gold" => Some(GOLD)
+    | _ => None
+    };
+
+  let decodeMeta = (json: Js.Json.t): meta => {
     Decode.{
       tile: json |> field("tile", Decode.string) |> decodeTile,
       visbility: json |> field("visibility", Decode.int),
+      tileEffect: json |> optional(field("tileEffect", Decode.string)) >>= decodeTileEffect
     };
+  };
 
   let decodePlace = (json: Js.Json.t): place =>
     Decode.{
