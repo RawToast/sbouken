@@ -170,10 +170,11 @@ describe("Decoders", () => {
       |> Domain.Decoders.decodeMeta
       |> expect(_)
       |> toEqual({
-        tile: Domain.WALL, 
-        visbility: 7, 
-        occupier: Some(Enemy{name: "Zombie", description: "Is scary"}), 
-        tileEffect: None})
+           tile: Domain.WALL,
+           visbility: 7,
+           occupier: Some(Enemy({name: "Zombie", description: "Is scary"})),
+           tileEffect: None,
+         })
     );
   });
 

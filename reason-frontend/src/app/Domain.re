@@ -89,21 +89,19 @@ module Decoders = {
     let name = json |> Decode.optional(Decode.field("name", Decode.string));
     let description = Decode.field("description", Decode.string);
 
-    name 
-      <$> (n => { name: n, description: description(json) })
-      <$> e => Enemy(e);
+    name <$> (n => {name: n, description: description(json)}) <$> (e => Enemy(e));
   };
 
   let decodeOccupier = (json: Js.Json.t): option(occupier) =>
-      json 
-      |> Decode.optional(Decode.string)
-      |> (
-        s =>
-          switch (s) {
-          | Some("Player") => Some(Player)
-          | Some("Unknown") => Some(Unknown)
-          | _ => decodeEnemy(json)
-          }
+    json
+    |> Decode.optional(Decode.string)
+    |> (
+      s =>
+        switch (s) {
+        | Some("Player") => Some(Player)
+        | Some("Unknown") => Some(Unknown)
+        | _ => decodeEnemy(json)
+        }
     );
 
   let decodeMeta = (json: Js.Json.t): meta =>
@@ -115,8 +113,5 @@ module Decoders = {
     };
 
   let decodePlace = (json: Js.Json.t): place =>
-    Decode.{
-      position: json |> field("position", decodePosition),
-      meta: json |> field("meta", decodeMeta)
-      };
+    Decode.{position: json |> field("position", decodePosition), meta: json |> field("meta", decodeMeta)};
 };
