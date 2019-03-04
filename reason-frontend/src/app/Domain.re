@@ -8,7 +8,7 @@ type player = {
 
 type position = {
   x: int,
-  y: int
+  y: int,
 };
 
 type tile =
@@ -19,6 +19,16 @@ type tile =
   | WATER
   | WALL
   | EXIT;
+
+type meta = {
+  tile,
+  visbility: int,
+};
+
+type place = {
+  position,
+  meta,
+};
 
 module Decoders = {
   open Rationale.Option;
@@ -36,11 +46,11 @@ module Decoders = {
   let decodePosition = (json: Js.Json.t): position =>
     Decode.{
       x: json |> field("x", Decode.int),
-      y: json |> field("y", Decode.int)
+      y: json |> field("y", Decode.int),
     };
 
   let decodeTile = (tileString): tile =>
-    switch(tileString) {
+    switch (tileString) {
     | "Ground" => GROUND
     | "Rough" => ROUGH
     | "Water" => WATER
@@ -50,5 +60,17 @@ module Decoders = {
     | "StairsUp" => STAIRS_UP
     | "StairsDown" => STAIRS_DOWN
     | _ => WALL
+    };
+
+  let decodeMeta = (json: Js.Json.t): meta =>
+    Decode.{
+      tile: json |> field("tile", Decode.string) |> decodeTile,
+      visbility: json |> field("visibility", Decode.int),
+    };
+
+  let decodePlace = (json: Js.Json.t): place =>
+    Decode.{
+      position: json |> field("position", decodePosition),
+      meta: json |> field("meta", decodeMeta),
     };
 };

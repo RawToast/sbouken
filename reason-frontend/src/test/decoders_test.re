@@ -47,7 +47,7 @@ describe("Decoders", () => {
          })
     );
   });
-  
+
   describe("DecodePosition", () => {
     let positionJson = {|{
           "x": 6,
@@ -59,10 +59,7 @@ describe("Decoders", () => {
       |> Json.parseOrRaise
       |> Domain.Decoders.decodePosition
       |> expect(_)
-      |> toEqual({
-           x: 6,
-           y: 1
-         })
+      |> toEqual({x: 6, y: 1})
     );
   });
 
@@ -130,7 +127,52 @@ describe("Decoders", () => {
       |> toEqual(Domain.WALL)
     );
   });
-  
+
+  describe("DecodeMeta", () => {
+    let metaJson = {|{
+          "tile": "Wall",
+          "visibility": 7
+        }|};
+
+    test("Decodes valid json", () =>
+      metaJson
+      |> Json.parseOrRaise
+      |> Domain.Decoders.decodeMeta
+      |> expect(_)
+      |> toEqual({tile: Domain.WALL, visbility: 7})
+    );
+  });
+
+  describe("DecodePlace", () => {
+    let simplePlaceJson = {|{
+            "position": {
+                "x": 0,
+                "y": 0
+            },
+            "meta": {
+                "tile": "Ground",
+                "visibility": 5
+            }
+        }|};
+
+    test("Decodes simple place json", () =>
+      simplePlaceJson
+      |> Json.parseOrRaise
+      |> Domain.Decoders.decodePlace
+      |> expect(_)
+      |> toEqual({
+           position: {
+             x: 0,
+             y: 0,
+           },
+           meta: {
+             tile: Domain.GROUND,
+             visbility: 5,
+           },
+         })
+    );
+  });
+
   describe("Decode Full Json", () =>
     test("Decodes valid json", () =>
       expect(true) |> toBe(true)
