@@ -1,10 +1,10 @@
 open Jest;
 
-describe("Parser", () => {
+describe("Decoders", () => {
   open ExpectJs;
   open Domain;
 
-  describe("Parse Player Json", () => {
+  describe("DecodePlayer", () => {
     let fullPlayerJson = {|{
             "name": "Test Player",
             "health": 10,
@@ -19,7 +19,7 @@ describe("Parser", () => {
             "timeDelta": 0
         }|};
 
-    test("Parses valid json", () =>
+    test("Decodes valid json", () =>
       fullPlayerJson
       |> Json.parseOrRaise
       |> Domain.Decoders.decodePlayer
@@ -33,7 +33,7 @@ describe("Parser", () => {
          })
     );
 
-    test("Parses partial player json", () =>
+    test("Decodes partial player json", () =>
       playerJson
       |> Json.parseOrRaise
       |> Domain.Decoders.decodePlayer
@@ -48,13 +48,13 @@ describe("Parser", () => {
     );
   });
   
-  describe("Parse Position Json", () => {
+  describe("DecodePosition", () => {
     let positionJson = {|{
           "x": 6,
           "y": 1
         }|};
 
-    test("Parses valid json", () =>
+    test("Decodes valid json", () =>
       positionJson
       |> Json.parseOrRaise
       |> Domain.Decoders.decodePosition
@@ -66,8 +66,8 @@ describe("Parser", () => {
     );
   });
   
-  describe("Parse Full Json", () =>
-    test("Parses valid json", () =>
+  describe("Decode Full Json", () =>
+    test("Decodes valid json", () =>
       expect(true) |> toBe(true)
     )
   );
