@@ -85,22 +85,25 @@ module Decoders = {
     | _ => None
     };
 
-  let enemyDecoder = (json: Js.Json.t): enemyInfo =>
-    Decode.{name: json |> field("name", Decode.string), description: json |> field("description", Decode.string)};
+  let decodeEnemy = (json: Js.Json.t): option(occupier) => {
+    let name = json |> Decode.optional(Decode.field("name", Decode.string));
+    let description = Decode.field("description", Decode.string);
+
+    name 
+      <$> (n => { name: n, description: description(json) })
+      <$> e => Enemy(e);
+  };
 
   let decodeOccupier = (json: Js.Json.t): option(occupier) =>
-    Decode.(
-      json
-      |> field("kind", Decode.string)
+      json 
+      |> Decode.optional(Decode.string)
       |> (
         s =>
           switch (s) {
-          | "Player" => Some(Player)
-          | "Unknown" => Some(Unknown)
-          | "Enemy" => Some(Enemy(enemyDecoder(json)))
-          | _ => None
+          | Some("Player") => Some(Player)
+          | Some("Unknown") => Some(Unknown)
+          | _ => decodeEnemy(json)
           }
-      )
     );
 
   let decodeMeta = (json: Js.Json.t): meta =>
@@ -112,5 +115,8 @@ module Decoders = {
     };
 
   let decodePlace = (json: Js.Json.t): place =>
-    Decode.{position: json |> field("position", decodePosition), meta: json |> field("meta", decodeMeta)};
+    Decode.{
+      position: json |> field("position", decodePosition),
+      meta: json |> field("meta", decodeMeta)
+      };
 };

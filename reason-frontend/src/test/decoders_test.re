@@ -125,9 +125,7 @@ describe("Decoders", () => {
       {|{
           "tile": "Wall",
           "visibility": 7,
-          "occupier": {
-            "kind": "Player"
-          }
+          "occupier": "Player"
         }|}
       |> Json.parseOrRaise
       |> Domain.Decoders.decodeMeta
@@ -145,6 +143,37 @@ describe("Decoders", () => {
       |> Domain.Decoders.decodeMeta
       |> expect(_)
       |> toEqual({tile: Domain.WALL, visbility: 7, occupier: None, tileEffect: Some(TRAP)})
+    );
+
+    test("Decodes meta with an unknown occupier", () =>
+      {|{
+          "tile" : "Wall",
+          "visibility" : 7,
+          "occupier" : "Unknown"
+        }|}
+      |> Json.parseOrRaise
+      |> Domain.Decoders.decodeMeta
+      |> expect(_)
+      |> toEqual({tile: Domain.WALL, visbility: 7, occupier: Some(Unknown), tileEffect: None})
+    );
+
+    test("Decodes meta with an enemy", () =>
+      {|{
+          "tile" : "Wall",
+          "visibility" : 7,
+          "occupier" : {
+            "name" : "Zombie",
+            "description" : "Is scary"
+          }
+        }|}
+      |> Json.parseOrRaise
+      |> Domain.Decoders.decodeMeta
+      |> expect(_)
+      |> toEqual({
+        tile: Domain.WALL, 
+        visbility: 7, 
+        occupier: Some(Enemy{name: "Zombie", description: "Is scary"}), 
+        tileEffect: None})
     );
   });
 
