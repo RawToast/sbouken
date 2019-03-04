@@ -26,10 +26,20 @@ type tileEffect =
   | HEAL
   | GOLD;
 
+type enemyInfo = {
+  name: string,
+  description: string,
+};
+type occupier =
+  | Player
+  | Enemy(enemyInfo)
+  | Unknown;
+
 type meta = {
   tile,
   visbility: int,
-  tileEffect: option(tileEffect)
+  occupier: option(occupier),
+  tileEffect: option(tileEffect),
 };
 
 type place = {
@@ -51,12 +61,9 @@ module Decoders = {
     };
 
   let decodePosition = (json: Js.Json.t): position =>
-    Decode.{
-      x: json |> field("x", Decode.int),
-      y: json |> field("y", Decode.int),
-    };
+    Decode.{x: json |> field("x", Decode.int), y: json |> field("y", Decode.int)};
 
-  let decodeTile = (tileString): tile =>
+  let decodeTile = tileString: tile =>
     switch (tileString) {
     | "Ground" => GROUND
     | "Rough" => ROUGH
@@ -69,7 +76,7 @@ module Decoders = {
     | _ => WALL
     };
 
-    let decodeTileEffect = (tileEffectString): option(tileEffect) =>
+  let decodeTileEffect = tileEffectString: option(tileEffect) =>
     switch (tileEffectString) {
     | "Trap" => Some(TRAP)
     | "Snare" => Some(SNARE)
@@ -78,17 +85,32 @@ module Decoders = {
     | _ => None
     };
 
-  let decodeMeta = (json: Js.Json.t): meta => {
+  let enemyDecoder = (json: Js.Json.t): enemyInfo =>
+    Decode.{name: json |> field("name", Decode.string), description: json |> field("description", Decode.string)};
+
+  let decodeOccupier = (json: Js.Json.t): option(occupier) =>
+    Decode.(
+      json
+      |> field("kind", Decode.string)
+      |> (
+        s =>
+          switch (s) {
+          | "Player" => Some(Player)
+          | "Unknown" => Some(Unknown)
+          | "Enemy" => Some(Enemy(enemyDecoder(json)))
+          | _ => None
+          }
+      )
+    );
+
+  let decodeMeta = (json: Js.Json.t): meta =>
     Decode.{
       tile: json |> field("tile", Decode.string) |> decodeTile,
       visbility: json |> field("visibility", Decode.int),
-      tileEffect: json |> optional(field("tileEffect", Decode.string)) >>= decodeTileEffect
+      occupier: json |> optional(field("occupier", decodeOccupier)) |> Rationale.Option.flatten,
+      tileEffect: json |> optional(field("tileEffect", Decode.string)) >>= decodeTileEffect,
     };
-  };
 
   let decodePlace = (json: Js.Json.t): place =>
-    Decode.{
-      position: json |> field("position", decodePosition),
-      meta: json |> field("meta", decodeMeta),
-    };
+    Decode.{position: json |> field("position", decodePosition), meta: json |> field("meta", decodeMeta)};
 };

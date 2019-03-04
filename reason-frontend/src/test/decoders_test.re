@@ -24,13 +24,7 @@ describe("Decoders", () => {
       |> Json.parseOrRaise
       |> Domain.Decoders.decodePlayer
       |> expect(_)
-      |> toEqual({
-           name: "Test Player",
-           health: 10,
-           timeDelta: 0.5,
-           gold: 10,
-           score: 9001,
-         })
+      |> toEqual({name: "Test Player", health: 10, timeDelta: 0.5, gold: 10, score: 9001})
     );
 
     test("Decodes partial player json", () =>
@@ -38,13 +32,7 @@ describe("Decoders", () => {
       |> Json.parseOrRaise
       |> Domain.Decoders.decodePlayer
       |> expect(_)
-      |> toEqual({
-           name: "New Player",
-           health: 10,
-           timeDelta: 0.,
-           gold: 0,
-           score: 0,
-         })
+      |> toEqual({name: "New Player", health: 10, timeDelta: 0., gold: 0, score: 0})
     );
   });
 
@@ -55,113 +43,67 @@ describe("Decoders", () => {
         }|};
 
     test("Decodes valid json", () =>
-      positionJson
-      |> Json.parseOrRaise
-      |> Domain.Decoders.decodePosition
-      |> expect(_)
-      |> toEqual({x: 6, y: 1})
+      positionJson |> Json.parseOrRaise |> Domain.Decoders.decodePosition |> expect(_) |> toEqual({x: 6, y: 1})
     );
   });
 
   describe("DecodeTile", () => {
     test("Can decode a ground tile", () =>
-      "Ground"
-      |> Domain.Decoders.decodeTile
-      |> expect(_)
-      |> toEqual(Domain.GROUND)
+      "Ground" |> Domain.Decoders.decodeTile |> expect(_) |> toEqual(Domain.GROUND)
     );
 
     test("Can decode a rough tile", () =>
-      "Rough"
-      |> Domain.Decoders.decodeTile
-      |> expect(_)
-      |> toEqual(Domain.ROUGH)
+      "Rough" |> Domain.Decoders.decodeTile |> expect(_) |> toEqual(Domain.ROUGH)
     );
 
     test("Can decode a water tile", () =>
-      "Water"
-      |> Domain.Decoders.decodeTile
-      |> expect(_)
-      |> toEqual(Domain.WATER)
+      "Water" |> Domain.Decoders.decodeTile |> expect(_) |> toEqual(Domain.WATER)
     );
 
     test("Can decode an exit tile", () =>
-      "Exit"
-      |> Domain.Decoders.decodeTile
-      |> expect(_)
-      |> toEqual(Domain.EXIT)
+      "Exit" |> Domain.Decoders.decodeTile |> expect(_) |> toEqual(Domain.EXIT)
     );
 
     test("Can decode a wall tile", () =>
-      "Wall"
-      |> Domain.Decoders.decodeTile
-      |> expect(_)
-      |> toEqual(Domain.WALL)
+      "Wall" |> Domain.Decoders.decodeTile |> expect(_) |> toEqual(Domain.WALL)
     );
 
     test("Decodes Stairs to a Stairs up tile", () =>
-      "Stairs"
-      |> Domain.Decoders.decodeTile
-      |> expect(_)
-      |> toEqual(Domain.STAIRS_UP)
+      "Stairs" |> Domain.Decoders.decodeTile |> expect(_) |> toEqual(Domain.STAIRS_UP)
     );
 
     test("Decodes StairsUp to a Stairs up tile", () =>
-      "StairsUp"
-      |> Domain.Decoders.decodeTile
-      |> expect(_)
-      |> toEqual(Domain.STAIRS_UP)
+      "StairsUp" |> Domain.Decoders.decodeTile |> expect(_) |> toEqual(Domain.STAIRS_UP)
     );
 
     test("Decodes StairsDown to a Stairs down tile", () =>
-      "StairsDown"
-      |> Domain.Decoders.decodeTile
-      |> expect(_)
-      |> toEqual(Domain.STAIRS_DOWN)
+      "StairsDown" |> Domain.Decoders.decodeTile |> expect(_) |> toEqual(Domain.STAIRS_DOWN)
     );
 
     test("Defaults to Wall when the tile is invalid", () =>
-      "HEy"
-      |> Domain.Decoders.decodeTile
-      |> expect(_)
-      |> toEqual(Domain.WALL)
+      "HEy" |> Domain.Decoders.decodeTile |> expect(_) |> toEqual(Domain.WALL)
     );
   });
 
   describe("DecodeTileEffect", () => {
     test("Can decode a trap", () =>
-      "Trap"
-      |> Domain.Decoders.decodeTileEffect
-      |> expect(_)
-      |> toEqual(Some(TRAP))
+      "Trap" |> Domain.Decoders.decodeTileEffect |> expect(_) |> toEqual(Some(TRAP))
     );
 
     test("Can decode a snare", () =>
-      "Snare"
-      |> Domain.Decoders.decodeTileEffect
-      |> expect(_)
-      |> toEqual(Some(SNARE))
+      "Snare" |> Domain.Decoders.decodeTileEffect |> expect(_) |> toEqual(Some(SNARE))
     );
 
     test("Can decode gold", () =>
-      "Gold"
-      |> Domain.Decoders.decodeTileEffect
-      |> expect(_)
-      |> toEqual(Some(GOLD))
+      "Gold" |> Domain.Decoders.decodeTileEffect |> expect(_) |> toEqual(Some(GOLD))
     );
 
     test("Can decode heal", () =>
-      "Heal"
-      |> Domain.Decoders.decodeTileEffect
-      |> expect(_)
-      |> toEqual(Some(Domain.HEAL))
+      "Heal" |> Domain.Decoders.decodeTileEffect |> expect(_) |> toEqual(Some(Domain.HEAL))
     );
 
     test("Defaults to None", () =>
-      "SomethingElse"
-      |> Domain.Decoders.decodeTileEffect
-      |> expect(_)
-      |> toEqual(None)
+      "SomethingElse" |> Domain.Decoders.decodeTileEffect |> expect(_) |> toEqual(None)
     );
   });
 
@@ -176,7 +118,21 @@ describe("Decoders", () => {
       |> Json.parseOrRaise
       |> Domain.Decoders.decodeMeta
       |> expect(_)
-      |> toEqual({tile: Domain.WALL, visbility: 7, tileEffect: None})
+      |> toEqual({tile: Domain.WALL, visbility: 7, tileEffect: None, occupier: None})
+    );
+
+    test("Decodes meta containing the player", () =>
+      {|{
+          "tile": "Wall",
+          "visibility": 7,
+          "occupier": {
+            "kind": "Player"
+          }
+        }|}
+      |> Json.parseOrRaise
+      |> Domain.Decoders.decodeMeta
+      |> expect(_)
+      |> toEqual({tile: Domain.WALL, visbility: 7, occupier: Some(Player), tileEffect: None})
     );
 
     test("Decodes meta with an effect", () =>
@@ -188,7 +144,7 @@ describe("Decoders", () => {
       |> Json.parseOrRaise
       |> Domain.Decoders.decodeMeta
       |> expect(_)
-      |> toEqual({tile: Domain.WALL, visbility: 7, tileEffect: Some(TRAP)})
+      |> toEqual({tile: Domain.WALL, visbility: 7, occupier: None, tileEffect: Some(TRAP)})
     );
   });
 
@@ -217,7 +173,8 @@ describe("Decoders", () => {
            meta: {
              tile: Domain.GROUND,
              visbility: 5,
-             tileEffect: None
+             occupier: None,
+             tileEffect: None,
            },
          })
     );
