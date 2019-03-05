@@ -47,6 +47,12 @@ type place = {
   meta,
 };
 
+type level = {
+  name: string,
+  area: list(place),
+  tileSet: string
+};
+
 module Decoders = {
   open Rationale.Option;
   open Json;
@@ -114,4 +120,11 @@ module Decoders = {
 
   let decodePlace = (json: Js.Json.t): place =>
     Decode.{position: json |> field("position", decodePosition), meta: json |> field("meta", decodeMeta)};
+
+  let decodeLevel = (json: Js.Json.t): level =>
+    Decode.{
+      name: json |> field("name", Decode.string),
+      area: json |> field("area", Decode.list(decodePlace)),
+      tileSet: json |> field("tileSet", Decode.string)
+    };
 };

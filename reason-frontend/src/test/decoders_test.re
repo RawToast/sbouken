@@ -210,6 +210,42 @@ describe("Decoders", () => {
     );
   });
 
+  describe("Decode Place", () =>
+    test("Decodes valid level json", () =>
+      {|{
+          "name": "test level",
+          "area": [{
+            "position": {
+                "x": 0,
+                "y": 0
+            },
+            "meta": {
+                "tile": "Ground",
+                "visibility": 5
+            }}],
+            "tileSet": "default"
+        }|}
+      |> Json.parseOrRaise
+      |> Domain.Decoders.decodeLevel
+      |> expect(_)
+      |> toEqual({
+           name: "test level",
+           area: [{
+           position: {
+             x: 0,
+             y: 0,
+           },
+           meta: {
+             tile: Domain.GROUND,
+             visbility: 5,
+             occupier: None,
+             tileEffect: None,
+           },
+         }],
+         tileSet: "default"})
+    )
+  );
+
   describe("Decode Full Json", () =>
     test("Decodes valid json", () =>
       expect(true) |> toBe(true)
