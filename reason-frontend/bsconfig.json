@@ -4,7 +4,7 @@
   "sources": [
     {
       "dir": "src",
-      "subdirs": [ "app", "ui" ]
+      "subdirs": [ "app", "old", "ui" ]
     },
     {
       "dir": "src/test",
@@ -23,7 +23,8 @@
     "reason-react",
     "rationale",
     "bs-webapi",
-    "bs-fetch"
+    "bs-fetch",
+    "@glennsl/bs-json"
   ],
   "bs-dev-dependencies": [
     "@glennsl/bs-jest",

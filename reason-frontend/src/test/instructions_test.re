@@ -1,11 +1,11 @@
 open Jest;
 
-describe("Key", () => {
-  open ExpectJs;
+describe("Instructions", () =>
+  ExpectJs.(
+    test("Renders with no input", () => {
+      let component = ReactShallowRenderer.renderWithRenderer(<Instructions />);
 
-  test("Renders with no input", () => {
-    let component = ReactShallowRenderer.renderWithRenderer(<Instructions />);
-    
-    expect(Js.Undefined.return(component)) |> toBeDefined;
-  })
-})
+      expect(Js.Undefined.return(component)) |> toBeDefined;
+    })
+  )
+);
