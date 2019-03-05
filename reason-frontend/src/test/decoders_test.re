@@ -246,9 +246,33 @@ describe("Decoders", () => {
     )
   );
 
-  describe("Decode Full Json", () =>
-    test("Decodes valid json", () =>
-      expect(true) |> toBe(true)
-    )
+  describe("Decode Full Json", () => {
+    let result = FullResponse.fullResponse
+        |> Json.parseOrRaise
+        |> Domain.Decoders.decodeResponse;
+    test("Decodes the game id", () =>
+        result.id
+          |> expect(_)
+          |> toBe("f8df1322-128f-4018-95fc-625486810192")
+      )
+
+    test("Decodes the player", () =>
+        result.player
+          |> expect(_)
+          |> toEqual({
+            name: "the player",
+            health: 10,
+            timeDelta: 0.,
+            gold: 0,
+            score: 0
+          })
+      )
+
+    test("Decodes the level", () =>
+        result.level.name
+          |> expect(_)
+          |> toBe("Dungeon 1")
+      )
+    }
   );
 });

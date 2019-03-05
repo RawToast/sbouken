@@ -53,6 +53,12 @@ type level = {
   tileSet: string
 };
 
+type response = {
+  id: string,
+  player: player,
+  level: level
+};
+
 module Decoders = {
   open Rationale.Option;
   open Json;
@@ -126,5 +132,12 @@ module Decoders = {
       name: json |> field("name", Decode.string),
       area: json |> field("area", Decode.list(decodePlace)),
       tileSet: json |> field("tileSet", Decode.string)
+    };
+
+  let decodeResponse = (json: Js.Json.t): response =>
+    Decode.{
+      id: json |> field("id", Decode.string),
+      player: json |> field("player", decodePlayer),
+      level: json |> field("level", decodeLevel)
     };
 };
