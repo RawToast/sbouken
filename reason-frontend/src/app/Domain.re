@@ -59,6 +59,10 @@ type response = {
   level: level
 };
 
+type effect =
+  | StartedGame(response)
+  | UpdatedGame(response);
+
 module Decoders = {
   open Rationale.Option;
   open Json;
