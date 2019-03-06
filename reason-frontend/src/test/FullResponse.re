@@ -16,7 +16,7 @@ let fullResponse = {|
 				"meta": {
 					"tile": "Ground",
 					"visibility": 5,
-					"occupier": "player"
+					"occupier": "Player"
 				}
 			},
 			{
