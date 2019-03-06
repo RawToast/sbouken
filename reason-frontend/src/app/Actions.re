@@ -1,3 +1,6 @@
+type effect =
+  | StartedGame(Domain.response)
+  | UpdatedGame(Domain.response);
 
 module type GameClient = {
   let createGame: string => Js.Promise.t(Domain.response);
@@ -10,7 +13,7 @@ module Actions(GC: GameClient) = {
         Js.Promise.(
           GC.createGame(name)
           |> then_((serverResponse: Domain.response) => {
-               self.send(Domain.StartedGame(serverResponse));
+               self.send(StartedGame(serverResponse));
                resolve(serverResponse);
              })
         )
