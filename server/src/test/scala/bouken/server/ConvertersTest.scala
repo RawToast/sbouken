@@ -25,9 +25,8 @@ class ConvertersTest extends FreeSpec with Matchers {
         "sets the tile meta" in {
           result.meta shouldBe Tile.Meta(
             tile = Tile.TileKind.Ground,
-            visibility = Tile.Meta.Visibility.Visibile(7),
-            player = None,
-            enemyKind = None,
+            visibility = Tile.Meta.Visibility(7),
+            occupier = None,
             tileEffect = None
           )
         }
@@ -48,9 +47,8 @@ class ConvertersTest extends FreeSpec with Matchers {
         "sets tile meta with the correct enemy" in {
           result.meta shouldBe Tile.Meta(
             tile = Tile.TileKind.Ground,
-            visibility = Tile.Meta.Visibility.Visibile(7),
-            player = None,
-            enemyKind = Some(EnemyKind.Minotaur),
+            visibility = Tile.Meta.Visibility(7),
+            occupier = Some(Tile.Meta.Occupier.Enemy("Minotaur", "")),
             tileEffect = None
           )
         }
@@ -71,10 +69,8 @@ class ConvertersTest extends FreeSpec with Matchers {
         "sets tile meta with the correct effect" in {
           result.meta shouldBe Tile.Meta(
             tile = Tile.TileKind.Ground,
-            visibility = Tile.Meta.Visibility.Visibile(7),
-            player = None,
-            enemyKind = None,
-
+            visibility = Tile.Meta.Visibility(7),
+            occupier = None,
             tileEffect = Some(Tile.TileEffect.Gold)
           )
         }
