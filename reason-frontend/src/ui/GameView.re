@@ -1,16 +1,16 @@
 
 open ReasonReact;
+open Domain;
 open Types;
 
-let currentLevel = (world) => World.World.currentLevel(world) |> Rationale.Option.default(List.hd(world.levels));
 type inxPlace = { i: int, place: place };
 type inxRow = { i: int, place: list(inxPlace) };
 
-let viewport = (player: player, area) => {
+let viewport = (player: Domain.player, area: Domain.level) => {
   open Rationale;
   let size = 6;
   let fullSize = 1 + (size * 2);
-  let (x, y) = player.location;
+  // let (x, y) = player.location;
   let blocks = RList.repeat({tile: WALL, state: Empty, tileEffect: NoEff, visible: false  }, size);
   
   let pt1 = area |> List.map(ys => blocks @ ys @ blocks);
@@ -28,16 +28,14 @@ let viewport = (player: player, area) => {
 
 let component = ReasonReact.statelessComponent("GameView");
 
-let make = (~game: game, ~movePlayer, ~takeStairs, ~useExit, _children) => {
+let make = (~game: Domain.response, ~takeInput, _children) => {
   ...component,
   render: (_) => 
     <div>
-      <GameStats player=(game.player) turn=(game.turn) level=(game.world.current) />
+      <GameStats player=(game.player) turn=(game.player.timeDelta) level=(game.level.name) />
       <GameMap 
-          area=(currentLevel(game.world).map |> viewport(game.player)) 
-          movePlayer=(movePlayer)
-          takeStairs=(takeStairs)
-          useExit=(useExit)
+          area=(game.level.area |> viewport(game.player)) 
+          takeInput=(takeInput)
           />
     </div>
 };

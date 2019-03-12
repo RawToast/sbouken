@@ -42,29 +42,29 @@ module GameElements = {
 };
 
 
-let handleKeyPress = (movement, stairs, useExit, evt: Dom.keyboardEvent) => {
+let handleKeyPress = (takeInput, evt: Dom.keyboardEvent) => {
   evt |> Webapi.Dom.KeyboardEvent.code
     |> code => switch code {
-    | "KeyQ" => movement(-1, 1)
-    | "KeyW" => movement(0, 1)
-    | "KeyE" => movement(1, 1)
-    | "KeyA" => movement(-1, 0)
-    | "KeyD" => movement(1, 0)
-    | "KeyZ" => movement(-1, -1)
-    | "KeyX" => movement(0, -1)
-    | "KeyC" => movement(1, -1)
-    | "KeyS" => movement(0, 0); useExit(); stairs() /* Alt key for wait? */
-    | _ => Js.Console.log("No");
+    | "KeyQ" => takeInput("NorthWest")
+    | "KeyW" => takeInput("North")
+    | "KeyE" => takeInput("NorthEast")
+    | "KeyA" => takeInput("West")
+    | "KeyD" => takeInput("East")
+    | "KeyZ" => takeInput("SouthWest")
+    | "KeyX" => takeInput("South")
+    | "KeyC" => takeInput("SouthEast")
+    | "KeyS" => takeInput("Use") /* Alt key for wait? */
+    | _ => Js.Console.log("Unrecognized command");
     };
   ();
 };
 
 open Webapi.Dom;
 
-let make = (~area: area, ~movePlayer, ~takeStairs, ~useExit, _children) => {
+let make = (~area: area, ~takeInput, _children) => {
   ...component,
   didMount: (_) =>  {
-    document |> Document.addKeyDownEventListener(handleKeyPress(movePlayer, takeStairs, useExit));
+    document |> Document.addKeyDownEventListener(handleKeyPress(takeInput));
   },
   render: _self =>
     <div className="GameMap">

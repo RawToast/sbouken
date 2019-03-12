@@ -1,6 +1,24 @@
+
+type gameAction =
+  | KeyboardInput(string);
+  // | MovePlayer(int, int)
+  // | TakeStairs
+  // | UseExit;
+
+type appAction =
+  | StartGame(string)
+  | Begin(Domain.response);
+
 type effect =
   | StartedGame(Domain.response)
-  | UpdatedGame(Domain.response);
+  | UpdatedGame(Domain.response)
+  | EndGame(Domain.response)
+  | Error(string);
+
+type action =
+  | GameAction(gameAction)
+  | AppAction(appAction)
+  | Effect(effect);
 
 module type GameClient = {
   let createGame: string => Js.Promise.t(Domain.response);
@@ -17,6 +35,9 @@ module Actions(GC: GameClient) = {
                resolve(serverResponse);
              })
         )
-        |> ignore,
+        |> ignore
     );
+
+  let keyboardInput: string => ReasonReact.update('a, 'b, effect) = 
+    _ => ReasonReact.NoUpdate;
 };
