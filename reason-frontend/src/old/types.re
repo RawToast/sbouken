@@ -111,42 +111,6 @@ let isPlayer = place => switch place.state {
   | _ => false
   };
 
-/* Modules */
-module type World = {
-  let updateLevel: (level, world) => world;
-  let currentLevel: world => option(level);
-  let selectLevel: (string, world) => option(level);
-};
-
-module type WorldBuilder = {
-  let create: player => world;
-};
-
-module type WorldCreator = {
-  let buildPlace: string => place;
-  let buildArea: string => area;
-  let buildLevel: (string, string) => level;
-  let loadWorldAsync: (string, list((string, string))) => Js.Promise.t(world);
-};
-
-module type Game = {
-  let create: string => game;
-  let attack: (int, int, game) => actionResult;
-  let movePlayer: (int, int, game) => actionResult;
-  let useStairs: game => actionResult;
-  let useExit: game => actionResult;
-  let resultUpdateVision: actionResult => actionResult;
-
-  let updateVision: game => game;
-};
-
-module type AsyncGame = {
-  let create: string => Js.Promise.t(game);
-  let attack: (int, int, game) => actionResult;
-  let movePlayer: (int, int, game) => actionResult;
-  let useStairs: game => actionResult;
-  let useExit: game => actionResult;
-};
 
 module Operators = {
   let isOk = r => switch(r) {
