@@ -10,9 +10,9 @@ let fullSize = 1 + (size * 2);
 let blocks = Rationale.RList.repeat({tile: WALL, visbility: 0, occupier: None, tileEffect: None  }, size);
 let allBlocks = blocks |> List.map(_ => blocks);
 
-let viewport = (player: Domain.player, area: Domain.level) => {
+let viewport = (player: Domain.player, level: Domain.level) => {
   let update = (x, y, meta: Domain.meta) => {
-    
+    if (level.area.)
     meta;
   };
 
