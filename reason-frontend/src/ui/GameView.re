@@ -1,29 +1,25 @@
 
 open ReasonReact;
 open Domain;
-open Types;
 
 type inxPlace = { i: int, place: place };
 type inxRow = { i: int, place: list(inxPlace) };
 
+let size = 6;
+let fullSize = 1 + (size * 2);
+let blocks = Rationale.RList.repeat({tile: WALL, visbility: 0, occupier: None, tileEffect: None  }, size);
+let allBlocks = blocks |> List.map(_ => blocks);
+
 let viewport = (player: Domain.player, area: Domain.level) => {
-  open Rationale;
-  let size = 6;
-  let fullSize = 1 + (size * 2);
-  // let (x, y) = player.location;
-  let blocks = RList.repeat({tile: WALL, state: Empty, tileEffect: NoEff, visible: false  }, size);
-  
-  let pt1 = area |> List.map(ys => blocks @ ys @ blocks);
+  let update = (x, y, meta: Domain.meta) => {
+    
+    meta;
+  };
 
-  let row = pt1 |> List.hd 
-                |> List.length 
-                |> RList.repeat({tile: WALL, state: Empty, tileEffect: NoEff, visible: false })
-                |> RList.repeat(_, size);
+  let updatedBlocks = allBlocks
+    |> List.mapi((y, ys) => ys |> List.mapi((x, m) => update(x, y, m)));
 
-  (row @ pt1 @ row)
-    |> RList.drop(y) 
-    |> RList.take(fullSize)
-    |> List.map(l => RList.drop(x, l) |> RList.take(fullSize));
+  updatedBlocks;
 };
 
 let component = ReasonReact.statelessComponent("GameView");

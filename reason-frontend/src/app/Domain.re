@@ -36,7 +36,7 @@ type occupier =
   | Unknown;
 
 type meta = {
-  tile,
+  tile: tile,
   visbility: int,
   occupier: option(occupier),
   tileEffect: option(tileEffect),
