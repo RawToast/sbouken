@@ -10,7 +10,7 @@ type inxRow = {
   place: list(inxPlace),
 };
 
-let size = 6;
+let size = 7;
 let fullSize = 1 + size * 2;
 let blocks = Rationale.RList.repeat({tile: WALL, visbility: 0, occupier: None, tileEffect: None}, fullSize);
 let allBlocks = blocks |> List.map(_ => blocks);
