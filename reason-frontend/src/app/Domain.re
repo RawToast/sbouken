@@ -49,6 +49,7 @@ type place = {
 
 type level = {
   name: string,
+  playerLocation: position,
   area: list(place),
   tileSet: string
 };
@@ -135,6 +136,7 @@ module Decoders = {
     Decode.{
       name: json |> field("name", Decode.string),
       area: json |> field("area", Decode.list(decodePlace)),
+      playerLocation: json |> field("playerLocation", decodePosition),
       tileSet: json |> field("tileSet", Decode.string)
     };
 

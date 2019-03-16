@@ -1,46 +1,52 @@
-open Types;
+open Domain;
 open ReasonReact;
 let component = ReasonReact.statelessComponent("GameMap");
 
 module GameElements = {
-  let makeEnemy = (e:enemy) => switch(e.name) {
+  let makeEnemy = (e:enemyInfo) => switch(e.name) {
   | "Zombie" => ("Z", "enemy")
   | "Minotaur" => ("M", "enemy")
   | _ => ("X", "enemy")
   };
 
-  let makeObject = (t, default) => switch(t.tileEffect) {
-      | Trap(_) => (",", "trap")
-      | Snare(_) => (";", "trap")
-      | Heal(_) => ("+", "health")
-      | Gold(_) => ("g", "gold")
-      | NoEff => default
-      };
+  let makeObject = (t: Domain.meta, default) => t.tileEffect
+    |> Rationale.Option.map(tileEffect => switch(tileEffect) {
+      | TRAP  => (",", "trap")
+      | SNARE => (";", "snare")
+      | HEAL  => ("+", "health")
+      | GOLD  => ("g", "gold")
+      })
+    |> Rationale.Option.default(default);
     
-  let stateToElement = (~incVisible=true, place: place, default) => 
-    switch place.state {
-    | Empty => default
-    | Player(_) => ("O", "player")
-    | Enemy(e) => makeEnemy(e)
-    } |> ((txt, claz)) => if (!place.visible) { (".", claz ++ " map-not-visible") } else { (txt, claz ++ " map-visible") };
+  let stateToElement = (~incVisible=true, place: meta, default) => place.occupier 
+    |> Rationale.Option.map(occupier =>
+      switch occupier {
+        | Player => ("O", "player")
+        | Enemy(e) => makeEnemy(e)
+        | Unknown => ("?", "Unknown")
+        })
+      |> Rationale.Option.map(((txt, claz)) => 
+          if (!(place.visbility > 0)) { (".", claz ++ " map-not-visible") } 
+          else { (txt, claz ++ " map-visible") })
+      |> Rationale.Option.default(default);
 
-  let tilesToElements = (index, places) => places |> List.mapi((i, place) =>
+  let tilesToElements = (index, places) => places |> List.mapi((i, place: Domain.meta) =>
     switch (place.tile) {
       | GROUND => makeObject(place, (".", "ground")) |> stateToElement(place)
       | ROUGH => makeObject(place, (":", "rough")) |> stateToElement(place)
       | WATER => makeObject(place, ("w", "water")) |> stateToElement(place) |> ((s, c)) => (s, c ++ " map-water")
       | WALL => ("#", "wall") |> stateToElement(~incVisible=false, place)
-      | STAIRS(_) => makeObject(place, ("/", "stairs")) |> stateToElement(place)
+      | STAIRS_UP(_) => makeObject(place, ("/", "stairs")) |> stateToElement(place)
+      | STAIRS_DOWN(_) => makeObject(place, ("\\", "stairs")) |> stateToElement(place)
       | EXIT(_) => makeObject(place, ("e", "exit")) |> stateToElement(place)
       }
     |> ((str, clazz)) => (<text key=(string_of_int(index)++"x"++string_of_int(i)) className=("map-" ++ clazz ++ " map")>(string(str))</text>));
   
-  let asElements: list(list(place)) => list(list(ReasonReact.reactElement)) =
+  let asElements: list(list(Domain.meta)) => list(list(ReasonReact.reactElement)) =
   (map) => map
     |> List.mapi((i, es) => es |> tilesToElements(i))
     |> List.map(li => [<br/>, ...li]);
 };
-
 
 let handleKeyPress = (takeInput, evt: Dom.keyboardEvent) => {
   evt |> Webapi.Dom.KeyboardEvent.code
@@ -61,7 +67,7 @@ let handleKeyPress = (takeInput, evt: Dom.keyboardEvent) => {
 
 open Webapi.Dom;
 
-let make = (~area: area, ~takeInput, _children) => {
+let make = (~area: list(list(Domain.meta)), ~takeInput, _children) => {
   ...component,
   didMount: (_) =>  {
     document |> Document.addKeyDownEventListener(handleKeyPress(takeInput));

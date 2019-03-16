@@ -214,6 +214,10 @@ describe("Decoders", () => {
     test("Decodes valid level json", () =>
       {|{
           "name": "test level",
+          "playerLocation" : {
+                "x": 0,
+                "y": 0
+            },
           "area": [{
             "position": {
                 "x": 0,
@@ -230,6 +234,10 @@ describe("Decoders", () => {
       |> expect(_)
       |> toEqual({
            name: "test level",
+           playerLocation:{
+             x: 0,
+             y: 0,
+           },
            area: [{
            position: {
              x: 0,

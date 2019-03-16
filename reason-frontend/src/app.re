@@ -1,7 +1,6 @@
 open Utils;
 
 open ReasonReact;
-open Types;
 open Webapi.Dom;
 
 requireCSS("./App.css");
@@ -67,8 +66,9 @@ let make = _children => {
           </div>
         | InGame(response) =>
           <GameView
-            response
-            takeInput = ((command) => self.send(Actions.GameAction(Actions.KeyboardInput(command)))) // useExit=(() => self.send(GameAction(UseExit)))
+            game = response
+            takeInput = ((command) => self.send(Actions.GameAction(Actions.KeyboardInput(command))))
+            // useExit=(() => self.send(GameAction(UseExit)))
           />
         }
       )
