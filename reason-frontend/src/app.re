@@ -25,12 +25,12 @@ let handleEffect = result =>
 
 let module AsyncActions = Actions.Actions(Client);
 
-let nappReducer = (act: Actions.action, view) =>
+let nappReducer = (act: Actions.action, view) => 
     switch (act) {
     | Actions.AppAction(appAction) =>
       switch (appAction) {
+      | Actions.Begin(response) => handleEffect(Actions.StartedGame(response))
       | Actions.StartGame(name) => AsyncActions.create(name)
-      | Actions.Begin(response) => ReasonReact.Update(InGame(response))
       }
     | Actions.GameAction(gameAction) => 
       switch gameAction {
@@ -49,7 +49,8 @@ let make = _children => {
         switch (self.state) {
         | Home =>
           <StartView
-            startGame=(string => self.send(Actions.StartGame(string)))
+            startGame=(string => self.send(
+              Actions.AppAction(Actions.StartGame(string))))
           />
         | Score(name, score) =>
           <div>
@@ -67,8 +68,9 @@ let make = _children => {
         | InGame(response) =>
           <GameView
             game = response
-            takeInput = ((command) => self.send(Actions.GameAction(Actions.KeyboardInput(command))))
-            // useExit=(() => self.send(GameAction(UseExit)))
+            takeInput = (string => self.send(
+              Actions.GameAction(Actions.KeyboardInput(string))
+              ))
           />
         }
       )
