@@ -22,7 +22,7 @@ module GameElements = {
        )
     |> Rationale.Option.default(default);
 
-  let stateToElement = (~incVisible=true, place: meta, default) =>
+  let toElementInfo = (~incVisible=true, place: meta, default) =>
     place.occupier
     |> Rationale.Option.map(occupier =>
          switch (occupier) {
@@ -31,27 +31,29 @@ module GameElements = {
          | Unknown => ("?", "Unknown")
          }
        )
-    // |> Rationale.Option.map(((txt, claz)) =>
-    //      if (!(place.visbility > 0)) {
-    //        (".", claz ++ " map-not-visible");
-    //      } else {
-    //        (txt, claz ++ " map-visible");
-    //      }
-    //    )
     |> Rationale.Option.default(default);
+    /** |> Rationale.Option.map(((txt, claz)) =>
+     *      if (!(place.visbility > 0)) {
+     *        (".", claz ++ " map-not-visible");
+     *      } else {
+     *        (txt, claz ++ " map-visible");
+     *      }
+     *    )
+     */
+    
 
   let tilesToElements = (index, places) =>
     places
     |> List.mapi((i, place: Domain.meta) =>
          (
            switch (place.tile) {
-           | GROUND      => makeObject(place, (".", "ground")) |> stateToElement(place)
-           | ROUGH       => makeObject(place, (":", "rough")) |> stateToElement(place)
-           | WATER       => makeObject(place, ("w", "water")) |> stateToElement(place) |> (((s, c)) => (s, c ++ " map-water"))
-           | WALL        => ("#", "wall") |> stateToElement(~incVisible=false, place)
-           | STAIRS_UP   => makeObject(place, ("/", "stairs")) |> stateToElement(place)
-           | STAIRS_DOWN => makeObject(place, ("\\", "stairs")) |> stateToElement(place)
-           | EXIT        => makeObject(place, ("e", "exit")) |> stateToElement(place)
+           | GROUND      => makeObject(place, (".", "ground")) |> toElementInfo(place)
+           | ROUGH       => makeObject(place, (":", "rough"))  |> toElementInfo(place)
+           | WATER       => makeObject(place, ("w", "water"))  |> toElementInfo(place) |> (((s, c)) => (s, c ++ " map-water"))
+           | WALL        => ("#", "wall") |> toElementInfo(~incVisible=false, place)
+           | STAIRS_UP   => makeObject(place, ("/", "stairs"))  |> toElementInfo(place)
+           | STAIRS_DOWN => makeObject(place, ("\\", "stairs")) |> toElementInfo(place)
+           | EXIT        => makeObject(place, ("e", "exit"))    |> toElementInfo(place)
            }
          )
          |> (

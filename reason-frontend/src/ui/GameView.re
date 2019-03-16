@@ -15,7 +15,7 @@ let fullSize = 1 + size * 2;
 let blocks = Rationale.RList.repeat({tile: WALL, visbility: 0, occupier: None, tileEffect: None}, fullSize);
 let allBlocks = blocks |> List.map(_ => blocks);
 
-let viewport = (player: Domain.player, level: Domain.level) => {
+let viewport = (level: Domain.level) => {
   open Rationale;
   let playerPos = level.playerLocation;
   let min = v => {
@@ -73,6 +73,6 @@ let make = (~game: Domain.response, ~takeInput, _children) => {
   render: _ =>
     <div>
       <GameStats player={game.player} turn={game.player.timeDelta} level={game.level.name} />
-      <GameMap area={game.level |> viewport(game.player)} takeInput />
+      <GameMap area={viewport(game.level)} takeInput />
     </div>,
 };
