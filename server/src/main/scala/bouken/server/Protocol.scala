@@ -2,15 +2,18 @@ package bouken.server
 
 import java.util.UUID
 
+import bouken.domain
 import io.circe._
+import io.circe.syntax._
 import io.circe.generic.semiauto.deriveEncoder
 import io.circe.generic.extras.semiauto.deriveUnwrappedEncoder
 import bouken.domain.{Player => _, _}
 import enumeratum._
+import com.softwaremill.quicklens._
 
 object Protocol {
 
-  case class GameViewResponse(id: UUID, player: GameViewResponse.Player, currentLevel: GameViewResponse.CurrentLevel)
+  case class GameViewResponse(id: UUID, player: GameViewResponse.Player, level: GameViewResponse.CurrentLevel)
 
   object GameViewResponse {
     def apply(game: Game): Option[GameViewResponse] = {
@@ -19,8 +22,8 @@ object Protocol {
       for {
         level <- game.world.currentLevel
         area = level.area
-        tiles = areaToTiles(area.value)
-        currentLevel = CurrentLevel(game.world.current, tiles, Some(level.tileSet))
+        tiles = areaToTiles(area.value, game.player.meta.position)
+        currentLevel = CurrentLevel(game.world.current, game.player.meta.position, tiles, Some(level.tileSet))
       } yield GameViewResponse(
         game.uuid,
         player,
@@ -28,9 +31,13 @@ object Protocol {
       )
     }
 
-    private def areaToTiles(area: Map[Position, Place]): Set[CurrentLevel.Tile] =
+    private def areaToTiles(area: Map[Position, Place], playerPosition: Position): Set[CurrentLevel.Tile] =
       area
-        .map{ case (position, place) => Converters.positionToTile(position, place) }
+        .map{ case (position, place) =>
+          if (position == playerPosition) Converters.positionToTile(position, place)
+            .modify(_.meta.occupier).setTo(Some(CurrentLevel.Tile.Meta.Occupier.Player))
+          else Converters.positionToTile(position, place)
+        }
         .toSet
 
 
@@ -46,37 +53,62 @@ object Protocol {
       implicit val encoder: Encoder[GameViewResponse.Player] = deriveEncoder[GameViewResponse.Player]
     }
 
-    case class CurrentLevel(name: Level.Name, area: Set[CurrentLevel.Tile], tileSet: Option[Level.TileSet])
+    case class CurrentLevel(
+      name: Level.Name,
+      playerLocation: Position,
+      area: Set[CurrentLevel.Tile],
+      tileSet: Option[Level.TileSet]
+    )
     object CurrentLevel {
+
+      implicit val positionEncoder: Encoder[Position] = deriveEncoder[Position]
 
       case class Tile(position: Position, meta: Tile.Meta, description: Option[String])
       object Tile {
         case class Meta(
           tile: TileKind,
           visibility: Meta.Visibility,
-          player: Option[Player],
-          enemyKind: Option[EnemyKind],
+          occupier: Option[Meta.Occupier],
           tileEffect: Option[TileEffect]
         )
         object Meta {
           def apply(place: Place): Meta = Meta(
-            TileKind.Ground,
-            Visibility.Visibile(7),
-            Player.fromPlace(place),
-            EnemyKind.fromPlace(place),
+            TileKind(place.tile),
+            Visibility(7),
+            Occupier.fromPlace(place),
             TileEffect(place.tileEffect)
           )
 
-          sealed trait Visibility extends EnumEntry
+          sealed trait Occupier
+          object Occupier {
+            import cats.syntax.show._
+            case object Player extends Occupier
+            case class Enemy(name: String, description: String) extends Occupier
 
-          case object Visibility extends Enum[Visibility] with CirceEnum[Visibility] {
-            val values = findValues
+            def fromPlace(p: Place): Option[Occupier] = {
+              p.state match {
+                case Empty => None
+                case domain.Player(_, _, _)  => Some(Occupier.Player)
+                case domain.Enemy(kind, _) => Some(Occupier.Enemy(kind.show, ""))
+              }
+            }
 
-            case class Visibile(brightness: Int) extends Visibility
-            case object Fow extends Visibility
+            implicit val encoder: Encoder[Occupier] = Encoder.instance {
+              case Player => "Player".asJson
+              case Enemy(name, description)       => Json.obj(
+                "name" -> name.asJson,
+                "description" -> description.asJson)
+            }
+
           }
 
-          implicit val encoder = deriveEncoder[Meta]
+          case class Visibility(value: Int) extends AnyVal
+
+          case object Visibility {
+            implicit val encoder: Encoder[Visibility] = deriveUnwrappedEncoder
+          }
+
+          implicit val encoder: Encoder[Meta] = deriveEncoder
         }
 
         sealed trait TileEffect extends EnumEntry
@@ -117,7 +149,6 @@ object Protocol {
           case object Exit extends TileKind
         }
 
-        implicit private val positionEncoder: Encoder[Position] = deriveEncoder[Position]
         implicit val tileEncoder: Encoder[Tile] = deriveEncoder[Tile]
       }
 

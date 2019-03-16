@@ -14,7 +14,7 @@ class PlaceTest extends FreeSpec with Matchers {
       val result = Tile.Meta(place)
 
       "player should not be present" in {
-        result.player shouldBe None
+        result.occupier shouldBe None
       }
     }
 
@@ -29,7 +29,7 @@ class PlaceTest extends FreeSpec with Matchers {
       val result = Tile.Meta(place)
 
       "player should be present" in {
-        result.player.isDefined shouldBe true
+        result.occupier shouldBe Some(Tile.Meta.Occupier.Player)
       }
     }
   }
