@@ -31,13 +31,13 @@ module GameElements = {
          | Unknown => ("?", "Unknown")
          }
        )
-    |> Rationale.Option.map(((txt, claz)) =>
-         if (!(place.visbility > 0)) {
-           (".", claz ++ " map-not-visible");
-         } else {
-           (txt, claz ++ " map-visible");
-         }
-       )
+    // |> Rationale.Option.map(((txt, claz)) =>
+    //      if (!(place.visbility > 0)) {
+    //        (".", claz ++ " map-not-visible");
+    //      } else {
+    //        (txt, claz ++ " map-visible");
+    //      }
+    //    )
     |> Rationale.Option.default(default);
 
   let tilesToElements = (index, places) =>

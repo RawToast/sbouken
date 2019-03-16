@@ -13,7 +13,7 @@ import com.softwaremill.quicklens._
 
 object Protocol {
 
-  case class GameViewResponse(id: UUID, player: GameViewResponse.Player, currentLevel: GameViewResponse.CurrentLevel)
+  case class GameViewResponse(id: UUID, player: GameViewResponse.Player, level: GameViewResponse.CurrentLevel)
 
   object GameViewResponse {
     def apply(game: Game): Option[GameViewResponse] = {
@@ -23,7 +23,7 @@ object Protocol {
         level <- game.world.currentLevel
         area = level.area
         tiles = areaToTiles(area.value, game.player.meta.position)
-        currentLevel = CurrentLevel(game.world.current, tiles, Some(level.tileSet))
+        currentLevel = CurrentLevel(game.world.current, game.player.meta.position, tiles, Some(level.tileSet))
       } yield GameViewResponse(
         game.uuid,
         player,
@@ -53,8 +53,15 @@ object Protocol {
       implicit val encoder: Encoder[GameViewResponse.Player] = deriveEncoder[GameViewResponse.Player]
     }
 
-    case class CurrentLevel(name: Level.Name, area: Set[CurrentLevel.Tile], tileSet: Option[Level.TileSet])
+    case class CurrentLevel(
+      name: Level.Name,
+      playerLocation: Position,
+      area: Set[CurrentLevel.Tile],
+      tileSet: Option[Level.TileSet]
+    )
     object CurrentLevel {
+
+      implicit val positionEncoder: Encoder[Position] = deriveEncoder[Position]
 
       case class Tile(position: Position, meta: Tile.Meta, description: Option[String])
       object Tile {
@@ -66,7 +73,7 @@ object Protocol {
         )
         object Meta {
           def apply(place: Place): Meta = Meta(
-            TileKind.Ground,
+            TileKind(place.tile),
             Visibility(7),
             Occupier.fromPlace(place),
             TileEffect(place.tileEffect)
@@ -142,7 +149,6 @@ object Protocol {
           case object Exit extends TileKind
         }
 
-        implicit private val positionEncoder: Encoder[Position] = deriveEncoder[Position]
         implicit val tileEncoder: Encoder[Tile] = deriveEncoder[Tile]
       }
 

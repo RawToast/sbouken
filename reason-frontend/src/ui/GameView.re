@@ -12,7 +12,7 @@ type inxRow = {
 
 let size = 6;
 let fullSize = 1 + size * 2;
-let blocks = Rationale.RList.repeat({tile: WALL, visbility: 0, occupier: None, tileEffect: None}, size);
+let blocks = Rationale.RList.repeat({tile: WALL, visbility: 0, occupier: None, tileEffect: None}, fullSize);
 let allBlocks = blocks |> List.map(_ => blocks);
 
 let viewport = (player: Domain.player, level: Domain.level) => {
@@ -39,10 +39,13 @@ let viewport = (player: Domain.player, level: Domain.level) => {
   let maxX = max(playerPos.x);
   let maxY = max(playerPos.y);
 
+  Js.Console.log("X " ++ string_of_int(minX) ++ " " ++ string_of_int(maxX));
+  Js.Console.log("Y " ++ string_of_int(minY) ++ " " ++ string_of_int(maxY));
+
   let restrictedArea =
     level.area
     |> RList.filter_map(
-         p => p.position.x >= minX && maxX >= p.position.x && p.position.y >= minY && maxY >= p.position.y,
+         p => p.position.x >= minX && p.position.x < maxX && p.position.y >= minY && maxY >= p.position.y,
          p => {
            ...p,
            position: {
