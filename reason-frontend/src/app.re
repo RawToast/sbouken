@@ -1,145 +1,63 @@
 open Utils;
 
 open ReasonReact;
-open Types;
 open Webapi.Dom;
 
 requireCSS("./App.css");
 
 type view =
   | Home
-  | InGame(Types.game)
+  | InGame(Domain.response)
   | Score(string, int);
-
-type gameAction =
-  | MovePlayer(int, int)
-  | TakeStairs
-  | UseExit;
-
-type appAction =
-  | StartGame(string)
-  | Begin(game);
-
-type action =
-  | GameAction(gameAction)
-  | AppAction(appAction);
 
 let component = ReasonReact.reducerComponent("App");
 
-let movement = (x, y) => MovePlayer(x, y);
-
-module Game: Types.Game = {
-  let initPlayer = name => {name: name, stats: { health: 10, speed: 1.0, position: 0., damage: 3 }, gold: 0, location: (6, 6)};
-
-  let initgame = pname => initPlayer(pname) |> p => {
-      player: p,
-      world: World.Builder.create(p),
-      turn: 0.
-      };
-
-  let create = name => initgame(name);
-
-  let attack = (x, y, game) => Error("Not currently supported");
-  let movePlayer = (x, y, game) => Ok(game);
-  let useStairs = game => Error("Not currently supported");
-  let useExit = game => Error("Not currently supported");
-  let resultUpdateVision = actionResult => actionResult;
-
-  let updateVision = game => game;
-};
-
-let mapGameOrError = (f, view) =>
-  switch (view) {
-  | InGame(g) => f(g) |> Game.resultUpdateVision
-  | _ => Error("Wrong app state")
-  };
-
-let update = result =>
+let handleEffect = result =>
   switch (result) {
-  | Ok(game) => InGame(game) |> (r => ReasonReact.Update(r))
-  | EndGame(score, name) =>
-    Score(name, score) |> (r => ReasonReact.Update(r))
+  | Actions.StartedGame(response) => InGame(response) |> (r => ReasonReact.Update(r))
+  | Actions.UpdatedGame(response) => InGame(response) |> (r => ReasonReact.Update(r))
+  | Actions.EndGame(response) => Score(response.player.name, response.player.score) |> (r => ReasonReact.Update(r))
   | Error(error) =>
     Js.Console.error(error);
     ReasonReact.NoUpdate;
   };
 
-let handleGameAction = (act, view) =>
+module AsyncActions = Actions.Actions(Client);
+
+let nappReducer = (act: Actions.action, _view) =>
   switch (act) {
-  | TakeStairs => view |> mapGameOrError(Game.useStairs(_)) |> update
-  | MovePlayer(x, y) =>
-    view |> mapGameOrError(Game.movePlayer(x, y)) |> update
-  | UseExit => view |> mapGameOrError(Game.useExit) |> update
+  | Actions.AppAction(appAction) =>
+    switch (appAction) {
+    | Actions.Begin(response) => handleEffect(Actions.StartedGame(response))
+    | Actions.StartGame(name) => AsyncActions.create(name)
+    }
+  | Actions.GameAction(gameAction) =>
+    switch (gameAction) {
+    | Actions.KeyboardInput(str) => AsyncActions.keyboardInput(str)
+    }
+  | Actions.Effect(effect) => handleEffect(effect)
   };
-
-let initPlayer = name => {
-  name,
-  stats: {
-    health: 10,
-    speed: 1.0,
-    position: 0.,
-    damage: 3,
-  },
-  gold: 0,
-  location: (1, 1),
-};
-
-let initgame = (pname, self) =>
-  initPlayer(pname)
-  |> (
-    p =>
-      World.FetchCsvBuilder.create(p)
-      |> Js.Promise.then_(w =>
-           {player: p, world: w, turn: 0.} |> Js.Promise.resolve
-         )
-      |> Js.Promise.then_(g => {
-           self.send(AppAction(Begin(g)));
-           Js.Promise.resolve(g);
-         })
-      |> ignore
-  );
 
 let make = _children => {
   ...component,
   initialState: () => Home,
-  reducer: (act: action, view) =>
-    switch (act) {
-    | GameAction(gameAction) => handleGameAction(gameAction, view)
-    | AppAction(appAction) =>
-      switch (appAction) {
-      | StartGame(name) => ReasonReact.SideEffects(initgame(name))
-      | Begin(game) => ReasonReact.Update(InGame(game |> Game.updateVision))
-      }
-    },
+  reducer: nappReducer,
   render: self =>
     <div className="App">
-      (
+      {
         switch (self.state) {
-        | Home =>
-          <StartView
-            startGame=(string => self.send(AppAction(StartGame(string))))
-          />
+        | Home => <StartView startGame=(string => self.send(Actions.AppAction(Actions.StartGame(string)))) />
         | Score(name, score) =>
           <div>
-            <div>
-              (
-                ReasonReact.string(
-                  name ++ " scored " ++ string_of_int(score) ++ " points",
-                )
-              )
-            </div>
-            <button onClick=(_ => Location.reload(location))>
-              (string("Try again"))
-            </button>
+            <div> {ReasonReact.string(name ++ " scored " ++ string_of_int(score) ++ " points")} </div>
+            <button onClick=(_ => Location.reload(location))> {string("Try again")} </button>
           </div>
-        | InGame(game) =>
+        | InGame(response) =>
           <GameView
-            game
-            takeStairs=(() => self.send(GameAction(TakeStairs)))
-            useExit=(() => self.send(GameAction(UseExit)))
-            movePlayer=((x, y) => self.send(GameAction(MovePlayer(x, y))))
+            game=response
+            takeInput=(string => self.send(Actions.GameAction(Actions.KeyboardInput(string))))
           />
         }
-      )
+      }
     </div>,
 };
