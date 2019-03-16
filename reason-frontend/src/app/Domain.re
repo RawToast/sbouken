@@ -36,7 +36,7 @@ type occupier =
   | Unknown;
 
 type meta = {
-  tile: tile,
+  tile,
   visbility: int,
   occupier: option(occupier),
   tileEffect: option(tileEffect),
@@ -51,13 +51,13 @@ type level = {
   name: string,
   playerLocation: position,
   area: list(place),
-  tileSet: string
+  tileSet: string,
 };
 
 type response = {
   id: string,
-  player: player,
-  level: level
+  player,
+  level,
 };
 
 type effect =
@@ -137,13 +137,13 @@ module Decoders = {
       name: json |> field("name", Decode.string),
       area: json |> field("area", Decode.list(decodePlace)),
       playerLocation: json |> field("playerLocation", decodePosition),
-      tileSet: json |> field("tileSet", Decode.string)
+      tileSet: json |> field("tileSet", Decode.string),
     };
 
   let decodeResponse = (json: Js.Json.t): response =>
     Decode.{
       id: json |> field("id", Decode.string),
       player: json |> field("player", decodePlayer),
-      level: json |> field("level", decodeLevel)
+      level: json |> field("level", decodeLevel),
     };
 };

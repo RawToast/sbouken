@@ -1,9 +1,6 @@
 
 type gameAction =
   | KeyboardInput(string);
-  // | MovePlayer(int, int)
-  // | TakeStairs
-  // | UseExit;
 
 type appAction =
   | StartGame(string)
