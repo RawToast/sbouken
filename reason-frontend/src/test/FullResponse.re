@@ -9,9 +9,9 @@ let fullResponse = {|
 	"level": {
 		"name": "Dungeon 1",
     "playerLocation" : {
-                "x": 0,
-                "y": 0
-            },
+      "x": 0,
+      "y": 0
+    },
 		"area": [{
 				"position": {
 					"x": 0,
