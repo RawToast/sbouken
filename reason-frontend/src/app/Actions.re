@@ -25,19 +25,20 @@ module type GameClient = {
 };
 
 module Actions(GC: GameClient) = {
-  let create = (name) =>
+  let create: string => ReasonReact.update('a, 'b, action) = 
+    (name) =>
     ReasonReact.SideEffects(
       self =>
         Js.Promise.(
           GC.createGame(name)
           |> then_((serverResponse: Domain.response) => {
-               self.send(StartedGame(serverResponse));
+               self.send(Effect(StartedGame(serverResponse)));
                resolve(serverResponse);
              })
         )
         |> ignore
     );
 
-  let keyboardInput: string => ReasonReact.update('a, 'b, effect) = 
+  let keyboardInput: string => ReasonReact.update('a, 'b, action) = 
     _ => ReasonReact.NoUpdate;
 };

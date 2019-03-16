@@ -25,7 +25,7 @@ let handleEffect = result =>
 
 let module AsyncActions = Actions.Actions(Client);
 
-let nappReducer = (act: Actions.action, view) => 
+let nappReducer = (act: Actions.action, _view) => {
     switch (act) {
     | Actions.AppAction(appAction) =>
       switch (appAction) {
@@ -37,7 +37,8 @@ let nappReducer = (act: Actions.action, view) =>
       | Actions.KeyboardInput(str) => AsyncActions.keyboardInput(str) 
       };
     | Actions.Effect(effect) => handleEffect(effect);
-    };
+    }
+  };
 
 let make = _children => {
   ...component,
