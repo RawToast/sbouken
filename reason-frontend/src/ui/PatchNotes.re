@@ -6,9 +6,14 @@ let notes =
     <div className="pre-scrollable">
         <pre className="c-messages">
             (string("
-v0.0.1 MVP
+v0.0.2 MVP
 
-* Initial ripped parts from Bouken")
+* Player Movement
+* Increased view size
+
+v0.0.1 Init
+
+* Initial ripped parts from Bouken bootable frontend")
             )
         </pre>
     </div>
