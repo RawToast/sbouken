@@ -1,17 +1,23 @@
 package bouken.services
 
 import bouken.domain.{Game, Player}
+import cats.Monad
 import cats.data.Chain
+import cats.syntax.applicative._
+import cats.syntax.functor._
 import cats.mtl.{FunctorTell, MonadState}
 
-abstract class PlayerMovement[F[_]] {
+abstract class PlayerMovement[F[_]: Monad] {
   import PlayerMovement._
 
-  def takeInput(move: Move)(
+  def takeInput(move: Move, game: Game)(
     implicit
-    S: MonadState[F, Player],
     T: FunctorTell[F, Chain[String]]
-  ): F[Game]
+  ): F[Game] = for {
+    g <- game.pure
+    player = g.player
+    currentName = g.world.current
+  } yield g
 
   def describeSurroundings()(
     implicit

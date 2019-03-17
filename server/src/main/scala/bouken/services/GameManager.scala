@@ -42,19 +42,9 @@ case class InMemoryGameManager[F[_]: ManagementMonadError](
     def getCurrentLevel(world: World): F[Level] =
       ErrorMonad.fromOption(world.currentLevel, InitialLevelDoesNotExist)
 
-    def findPlayer(level: Level) =
-      ErrorMonad.fromOption(
-        level.area.value.values
-          .find(_.state.isInstanceOf[Player])
-          .flatMap(occ => occ.state match {
-            case x: Player  => Some(x)
-            case _          => None
-          }), FailedToCreateGame)
-
     for {
       world <- makeWorld(directory)
       _ <- getCurrentLevel(world)
-//      pla   <- findPlayer(level)
     } yield Game(
       uuid = uuid,
       player = Player(playerName, Health(10), PlayerLevelMeta(Position(1, 2), TimeDelta(0d))),
