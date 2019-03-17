@@ -1,7 +1,6 @@
 package bouken.services
 
-import bouken.domain.{GameView, Level, World}
-import bouken.services.ManagementError.InitialLevelDoesNotExist
+import bouken.domain.GameView
 import cats.Monad
 import cats.data.Chain
 import cats.syntax.flatMap._
