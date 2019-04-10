@@ -18,24 +18,26 @@ abstract class PlayerMovement[F[_]: Monad] {
     L: ApplicativeAsk[F, Level],
     P: MonadState[F, Player],
     ME: MovementMonadError[F]
-  ): F[Boolean] = for {
+  ): F[Unit] = for {
     player <- P.get
     position = calculatePosition(player.meta.position, move)
     level = L.ask
     result = true
-    _ <- if (!result) ME.raiseError[Boolean](IllegalMove) else ME.pure(result)
-  } yield result
+    unit <- if (!result) ME.raiseError[Unit](IllegalMove) else ME.pure(())
+  } yield unit
 
   def describeSurroundings()(
     implicit
     S: MonadState[F, Player],
+    L: ApplicativeAsk[F, Level], // Temporary, should be a new Type for visible tiles
     T: FunctorTell[F, Chain[String]]
-  ): F[Unit]
+  ): F[Unit] = ().pure[F]
 
   def tileEffect()(
     implicit S: MonadState[F, Player],
+    L: ApplicativeAsk[F, Level], // Temporary, should be a new Type for visible tiles
     T: FunctorTell[F, Chain[String]]
-  ): F[Game]
+  ): F[Unit] =  ().pure[F]
 }
 
 object PlayerMovement {
