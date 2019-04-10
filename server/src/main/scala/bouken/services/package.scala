@@ -16,9 +16,14 @@ package object services {
     case object GameDoesNotExist extends ManagementError
   }
 
+  sealed trait MovementError extends GameError
+  case object IllegalMove extends MovementError
+
   type GameLoopMonadError[F[_]] = MonadError[F, GameLoopError]
 
   type ManagementMonadError[F[_]] = MonadError[F, ManagementError]
+
+  type MovementMonadError[F[_]] = MonadError[F, MovementError]
 
   implicit class MonadErrorEx[A[_], E](me: MonadError[A, E]) {
     def fromOption[B](option: Option[B], error: E): A[B] =

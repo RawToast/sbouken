@@ -4,6 +4,7 @@ import bouken.domain.{Game, Level, Player, Position}
 import cats.Monad
 import cats.data.Chain
 import cats.syntax.applicative._
+import cats.syntax.flatMap._
 import cats.syntax.functor._
 import cats.mtl.{ApplicativeAsk, FunctorTell, MonadState}
 import com.softwaremill.quicklens._
@@ -15,12 +16,15 @@ abstract class PlayerMovement[F[_]: Monad] {
     implicit
     T: FunctorTell[F, Chain[String]],
     L: ApplicativeAsk[F, Level],
-    P: MonadState[F, Player]
+    P: MonadState[F, Player],
+    ME: MovementMonadError[F]
   ): F[Boolean] = for {
     player <- P.get
     position = calculatePosition(player.meta.position, move)
     level = L.ask
-  } yield true
+    result = true
+    _ <- if (!result) ME.raiseError[Boolean](IllegalMove) else ME.pure(result)
+  } yield result
 
   def describeSurroundings()(
     implicit

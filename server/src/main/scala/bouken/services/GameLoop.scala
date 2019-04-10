@@ -16,7 +16,8 @@ case class GameLoop[F[_] : Monad](
   def attempt(move: PlayerMovement.Move)(
     implicit
     S: MonadState[F, GameView],
-    T: FunctorTell[F, Chain[String]]
+    T: FunctorTell[F, Chain[String]],
+    MEL: MovementMonadError[F]
   ): F[Unit] = {
     for {
       gv <- S.get
