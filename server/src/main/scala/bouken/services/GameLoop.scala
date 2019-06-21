@@ -5,8 +5,9 @@ import cats.data.Chain
 import cats.syntax.flatMap._
 import cats.syntax.functor._
 import cats.mtl.{FunctorTell, MonadState}
-import com.olegpy.meow.hierarchy.{deriveApplicativeAsk => _, deriveApplicativeLocal => _, _}
 import cats.mtl.hierarchy.base._
+import com.olegpy.meow.hierarchy.deriveMonadState
+
 
 case class GameLoop[F[_] : MovementMonadError](
   playerMovement: PlayerMovement[F],

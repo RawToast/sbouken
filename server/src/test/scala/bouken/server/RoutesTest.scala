@@ -66,7 +66,7 @@ class RoutesTest extends FreeSpec with Matchers {
 
 object RoutesTest {
 
-  import com.olegpy.meow.hierarchy._
+  import com.olegpy.meow.hierarchy.deriveMonadErrorFromThrowable
 
   private val areaParser = OptionAreaParser(OptionPlaceParser)
   private val levelParser = OptionLevelParser(areaParser)

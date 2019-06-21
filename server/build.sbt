@@ -15,7 +15,7 @@ resolvers ++= Seq(
 
 libraryDependencies ++= Seq(
   "org.typelevel" %% "cats-core" % "1.6.0",
-  "org.typelevel" %% "cats-mtl-core" % "0.4.0",
+  "org.typelevel" %% "cats-mtl-core" % "0.5.0",
   // circe
   "io.circe" %% "circe-core" % circeVersion,
   "io.circe" %% "circe-generic" % circeVersion,
@@ -27,12 +27,12 @@ libraryDependencies ++= Seq(
   "org.http4s" %% "http4s-blaze-client" % http4sVersion,
   "org.http4s" %% "http4s-circe" % http4sVersion,
   // mtl
-  "com.olegpy" %% "meow-mtl" % "0.2.0",
+  "com.olegpy" %% "meow-mtl" % "0.2.1",
   //enum
   "com.beachape" %% "enumeratum" % "1.5.13",
   "com.beachape" %% "enumeratum-circe" % "1.5.14",
   //other
-  "com.github.mpilquist" %% "simulacrum" % "0.14.0",
+  "com.github.mpilquist" %% "simulacrum" % "0.15.0",
   "org.typelevel" %% "mouse" % "0.20",
   "com.softwaremill.quicklens" %% "quicklens" % "1.4.11",
   // test

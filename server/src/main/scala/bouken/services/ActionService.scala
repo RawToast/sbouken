@@ -17,7 +17,7 @@ case class ActionService[F[_]: Monad](
 
     for {
       game <- gameManager.loadGame(uuid)
-      _ <- playerMovement.takeInput()
+//      _ <- playerMovement.takeInput()
 
     } yield ???
 

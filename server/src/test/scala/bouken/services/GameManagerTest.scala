@@ -70,7 +70,7 @@ class GameManagerTest extends FreeSpec with Matchers {
 
   "IO GameManager" - {
     "createGame" - {
-      import com.olegpy.meow.hierarchy._
+      import com.olegpy.meow.hierarchy.deriveMonadErrorFromThrowable
       val gameManager = InMemoryGameManager[IO](worldParser)
       val testUUID = UUID.randomUUID()
 
