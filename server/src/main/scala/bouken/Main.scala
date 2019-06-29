@@ -3,7 +3,7 @@ package bouken
 import bouken.services.GameManager
 import cats.effect.{ExitCode, IO, IOApp}
 import cats.implicits._
-import com.olegpy.meow.hierarchy._
+import com.olegpy.meow.hierarchy.deriveMonadErrorFromThrowable
 import org.http4s.HttpApp
 import org.http4s.implicits._
 import org.http4s.server.Router

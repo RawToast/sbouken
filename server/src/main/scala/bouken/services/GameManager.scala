@@ -18,7 +18,7 @@ abstract class GameManager[F[_]: ManagementMonadError] {
 }
 
 object GameManager {
-  def inMemory[F[_]](implicit MonadError: ManagementMonadError[F]): InMemoryGameManager[F] = {
+  def inMemory[F[_]: ManagementMonadError](): InMemoryGameManager[F] = {
     val areaParser = OptionAreaParser(OptionPlaceParser)
     val levelParser = OptionLevelParser(areaParser)
     val worldParser = OptionWorldParser(levelParser)
@@ -37,24 +37,14 @@ case class InMemoryGameManager[F[_]: ManagementMonadError](
 
   def createGame(playerName: String, directory: String, uuid: UUID): F[Game] = {
     def makeWorld(directory: String): F[World] =
-    ErrorMonad.fromOption(worldParser.parseWorld(directory), FailedToCreateGame)
+      ErrorMonad.fromOption(worldParser.parseWorld(directory), FailedToCreateGame)
 
     def getCurrentLevel(world: World): F[Level] =
-    ErrorMonad.fromOption(world.currentLevel, InitialLevelDoesNotExist)
-
-    def findPlayer(level: Level) =
-      ErrorMonad.fromOption(
-        level.area.value.values
-          .find(_.state.isInstanceOf[Player])
-          .flatMap(occ => occ.state match {
-            case x: Player  => Some(x)
-            case _          => None
-          }), FailedToCreateGame)
+      ErrorMonad.fromOption(world.currentLevel, InitialLevelDoesNotExist)
 
     for {
       world <- makeWorld(directory)
       _ <- getCurrentLevel(world)
-//      pla   <- findPlayer(level)
     } yield Game(
       uuid = uuid,
       player = Player(playerName, Health(10), PlayerLevelMeta(Position(1, 2), TimeDelta(0d))),
